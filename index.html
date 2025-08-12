@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calculadora de Rescisão Trabalhista</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      align-items: flex-start;
+    }
+    .container {
+      max-width: 420px;
+      width: 100%;
+    }
+    h1 {
+      color: #a3c4dc;
+      font-weight: normal;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    input,
+    select {
+      padding: 8px;
+      margin-top: 5px;
+      width: 100%;
+      border: 1px solid rgba(163, 196, 220, 0.15);
+      border-radius: 5px;
+      background-color: #1e1e1e;
+      color: #e0e0e0;
+      font-size: 14px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #82b1c9;
+      box-shadow: 0 0 5px #82b1c9;
+    }
+    .resultado {
+      margin-top: 25px;
+      padding: 15px;
+      background-color: #1b1b1b;
+      border: 1px solid rgba(163, 196, 220, 0.15);
+      border-radius: 8px;
+      white-space: pre-wrap;
+      font-size: 14px;
+    }
+    strong {
+      color: #a3c4dc;
+    }
+    .btn-group {
+      margin-top: 15px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    button {
+      flex: 1;
+      padding: 10px 16px;
+      background-color: #00aaff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+      min-width: 120px;
+    }
+    button:hover {
+      background-color: #008ecc;
+    }
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background-color: #3b82f6dd;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease-in-out;
+      z-index: 1000;
+    }
+    #toast.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Calculadora de Rescisão Trabalhista</h1>
+    <label>
+      Data de admissão:
+      <input type="date" id="admissao" onchange="calcular()" />
+    </label>
+    <label>
+      Data de demissão:
+      <input type="date" id="demissao" onchange="calcular()" />
+    </label>
+    <label>
+      Salário bruto mensal:
+      <input type="number" id="salario" step="0.01" oninput="calcular()" />
+    </label>
+    <label>
+      Saldo de salário:
+      <select id="tipoSaldo" onchange="calcular()">
+        <option value="dias">Dias</option>
+        <option value="horas">Horas (HH:MM)</option>
+      </select>
+      <input
+        type="text"
+        id="saldo"
+        placeholder="Ex: 5 ou 40:30"
+        oninput="calcular()"
+      />
+    </label>
+    <label>
+      Saldo de folga rescisão (em dias):
+      <input type="number" id="folga" step="0.01" oninput="calcular()" />
+    </label>
+    <label>
+      Horas extras 50% (HH:MM):
+      <input
+        type="text"
+        id="he50"
+        placeholder="Ex: 10:30"
+        oninput="calcular()"
+      />
+    </label>
+    <label>
+      Horas extras 100% (HH:MM):
+      <input
+        type="text"
+        id="he100"
+        placeholder="Ex: 5:15"
+        oninput="calcular()"
+      />
+    </label>
+
+    <div class="btn-group">
+      <button onclick="calcular()">Calcular</button>
+      <button onclick="limpar()">Limpar</button>
+      <button onclick="copiarResumo()">Copiar Resumo</button>
+    </div>
+
+    <div class="resultado" id="resultado"></div>
+  </div>
+
+  <div id="toast">Resumo copiado para a área de transferência!</div>
+
+  <script>
+    function hhmmParaHoras(hhmm) {
+      if (!hhmm || !hhmm.includes(":")) return parseFloat(hhmm) || 0;
+      const [h, m] = hhmm.split(":").map(Number);
+      return h + m / 60;
+    }
+
+    let resultadoTexto = "";
+
+    function calcular() {
+      const salario = parseFloat(document.getElementById("salario").value) || 0;
+      const tipoSaldo = document.getElementById("tipoSaldo").value;
+      const saldoInput = document.getElementById("saldo").value.trim();
+      let saldoValor = 0;
+
+      if (tipoSaldo === "dias") {
+        saldoValor = (parseFloat(saldoInput) || 0) * (salario / 30);
+      } else {
+        saldoValor = hhmmParaHoras(saldoInput) * (salario / 220);
+      }
+
+      const folgaDias = parseFloat(document.getElementById("folga").value) || 0;
+      const folgaValor = folgaDias * (salario / 30);
+
+      const he50h = hhmmParaHoras(document.getElementById("he50").value) || 0;
+      const he50valor = he50h * (salario / 220) * 1.5;
+
+      const he100h = hhmmParaHoras(document.getElementById("he100").value) || 0;
+      const he100valor = he100h * (salario / 220) * 2;
+
+      const total = saldoValor + folgaValor + he50valor + he100valor;
+
+      resultadoTexto = `Resultado Estimado:
+Saldo de salário: R$ ${saldoValor.toFixed(2)}
+Folga rescisão: R$ ${folgaValor.toFixed(2)}
+Horas extras 50%: R$ ${he50valor.toFixed(2)}
+Horas extras 100%: R$ ${he100valor.toFixed(2)}
+Total Bruto: R$ ${total.toFixed(2)}`;
+
+      document.getElementById("resultado").textContent = resultadoTexto;
+    }
+
+    function limpar() {
+      document.getElementById("admissao").value = "";
+      document.getElementById("demissao").value = "";
+      document.getElementById("salario").value = "";
+      document.getElementById("tipoSaldo").value = "dias";
+      document.getElementById("saldo").value = "";
+      document.getElementById("folga").value = "";
+      document.getElementById("he50").value = "";
+      document.getElementById("he100").value = "";
+      document.getElementById("resultado").textContent = "";
+      resultadoTexto = "";
+    }
+
+    function copiarResumo() {
+      if (!resultadoTexto) {
+        alert("Calcule antes de copiar o resumo.");
+        return;
+      }
+      navigator.clipboard.writeText(resultadoTexto).then(() => {
+        const toast = document.getElementById("toast");
+        toast.classList.add("show");
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
