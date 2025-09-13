@@ -1,237 +1,1154 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Calculadora de Rescisão Trabalhista</title>
-  <style>
-    body {
-      background-color: #121212;
-      color: #e0e0e0;
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-      align-items: flex-start;
-    }
-    .container {
-      max-width: 420px;
-      width: 100%;
-    }
-    h1 {
-      color: #a3c4dc;
-      font-weight: normal;
-      text-align: center;
-      margin-bottom: 24px;
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-size: 14px;
-    }
-    input,
-    select {
-      padding: 8px;
-      margin-top: 5px;
-      width: 100%;
-      border: 1px solid rgba(163, 196, 220, 0.15);
-      border-radius: 5px;
-      background-color: #1e1e1e;
-      color: #e0e0e0;
-      font-size: 14px;
-      transition: border-color 0.3s, box-shadow 0.3s;
-    }
-    input:focus,
-    select:focus {
-      outline: none;
-      border-color: #82b1c9;
-      box-shadow: 0 0 5px #82b1c9;
-    }
-    .resultado {
-      margin-top: 25px;
-      padding: 15px;
-      background-color: #1b1b1b;
-      border: 1px solid rgba(163, 196, 220, 0.15);
-      border-radius: 8px;
-      white-space: pre-wrap;
-      font-size: 14px;
-    }
-    strong {
-      color: #a3c4dc;
-    }
-    .btn-group {
-      margin-top: 15px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    button {
-      flex: 1;
-      padding: 10px 16px;
-      background-color: #00aaff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: background-color 0.3s;
-      min-width: 120px;
-    }
-    button:hover {
-      background-color: #008ecc;
-    }
-    #toast {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      background-color: #3b82f6dd;
-      color: white;
-      padding: 10px 16px;
-      border-radius: 6px;
-      font-size: 14px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease-in-out;
-      z-index: 1000;
-    }
-    #toast.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Rescisão Trabalhista</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+        
+        .form-section {
+            flex: 1;
+            min-width: 350px;
+            padding: 20px;
+        }
+        
+        .results-section {
+            flex: 2;
+            min-width: 400px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-left: 1px solid #eee;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-calculate {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-calculate:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-clear {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .btn-clear:hover {
+            background-color: #e67e22;
+        }
+        
+        .btn-copy {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-copy:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-add {
+            background-color: var(--primary);
+            color: white;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+        
+        .btn-remove {
+            background-color: var(--danger);
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 3px;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .results-table th {
+            background-color: var(--primary);
+            color: white;
+            text-align: left;
+            padding: 12px;
+        }
+        
+        .results-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .results-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .results-table tr:hover {
+            background-color: #e9f7fe;
+        }
+        
+        .total-row {
+            font-weight: bold;
+            background-color: #eafaf1 !important;
+        }
+        
+        .section-title {
+            background-color: var(--dark);
+            color: white;
+            padding: 10px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        
+        .summary-box {
+            background-color: #eaf7ff;
+            border-left: 5px solid var(--secondary);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .final-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--success);
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f4f9f4;
+            border-radius: 5px;
+        }
+        
+        .dynamic-field {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        .dynamic-field input {
+            flex: 1;
+        }
+        
+        .saldo-tipo {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .saldo-tipo select {
+            width: auto;
+        }
+        
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--secondary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            font-size: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        #toast.show {
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .results-section {
+                border-left: none;
+                border-top: 1px solid #eee;
+            }
+            
+            .dynamic-field, .saldo-tipo {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .saldo-tipo select {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Calculadora de Rescisão Trabalhista</h1>
-    <label>
-      Data de admissão:
-      <input type="date" id="admissao" onchange="calcular()" />
-    </label>
-    <label>
-      Data de demissão:
-      <input type="date" id="demissao" onchange="calcular()" />
-    </label>
-    <label>
-      Salário base mensal:
-      <input type="number" id="salario" step="0.01" oninput="calcular()" />
-    </label>
-    <label>
-      Saldo de salário:
-      <select id="tipoSaldo" onchange="calcular()">
-        <option value="dias">Dias</option>
-        <option value="horas">Horas (HH:MM)</option>
-      </select>
-      <input
-        type="text"
-        id="saldo"
-        placeholder="Ex: 5 ou 40:30"
-        oninput="calcular()"
-      />
-    </label>
-    <label>
-      Saldo de folga rescisão (em dias):
-      <input type="number" id="folga" step="0.01" oninput="calcular()" />
-    </label>
-    <label>
-      Horas extras 50% (HH:MM):
-      <input
-        type="text"
-        id="he50"
-        placeholder="Ex: 10:30"
-        oninput="calcular()"
-      />
-    </label>
-    <label>
-      Horas extras 100% (HH:MM):
-      <input
-        type="text"
-        id="he100"
-        placeholder="Ex: 5:15"
-        oninput="calcular()"
-      />
-    </label>
-
-    <div class="btn-group">
-      <button onclick="calcular()">Calcular</button>
-      <button onclick="limpar()">Limpar</button>
-      <button onclick="copiarResumo()">Copiar Resumo</button>
+    <div class="container">
+        <header>
+            <h1>Calculadora Completa de Rescisão Trabalhista</h1>
+            <p class="subtitle">Calcule todos os componentes da rescisão conforme a CLT</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="form-section">
+                <h2>Dados do Funcionário</h2>
+                
+                <div class="form-group">
+                    <label for="nome">Nome do Funcionário:</label>
+                    <input type="text" id="nome" placeholder="Nome completo do funcionário">
+                </div>
+                
+                <div class="form-group">
+                    <label for="funcao">Função/Cargo:</label>
+                    <input type="text" id="funcao" placeholder="Cargo do funcionário">
+                </div>
+                
+                <div class="form-group">
+                    <label for="salario">Salário Base (R$):</label>
+                    <input type="number" id="salario" step="0.01" placeholder="Ex: 2752.89">
+                </div>
+                
+                <div class="form-group">
+                    <label for="admissao">Data de Admissão:</label>
+                    <input type="date" id="admissao">
+                </div>
+                
+                <div class="form-group">
+                    <label for="demissao">Data de Demissão:</label>
+                    <input type="date" id="demissao">
+                </div>
+                
+                <div class="form-group">
+                    <label for="tipo">Tipo de Demissão:</label>
+                    <select id="tipo">
+                        <option value="" selected disabled>Selecione o tipo de demissão</option>
+                        <option value="pedido_demissao">Pedido de Demissão</option>
+                        <option value="dispensa_sem_justa">Dispensa Sem Justa Causa</option>
+                        <option value="dispensa_com_justa">Dispensa Com Justa Causa</option>
+                        <option value="acordo">Acordo entre as Partes</option>
+                        <option value="experiencia_extincao">Término Contrato Experiência</option>
+                        <option value="experiencia_ant_empregador">Rescisão Contrato Experiência Antecipada pelo Empregador</option>
+                        <option value="experiencia_ant_empregado">Rescisão Contrato Experiência Antecipada pelo Empregado</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="aviso">Tipo de Aviso Prévio:</label>
+                    <select id="aviso">
+                        <option value="indenizado">Indenizado</option>
+                        <option value="trabalhado">Trabalhado</option>
+                        <option value="dispensado">Dispensado</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="multa480">Descontar Multa do Art. 480 da CLT:</label>
+                    <select id="multa480">
+                        <option value="nao">Não</option>
+                        <option value="sim">Sim</option>
+                    </select>
+                </div>
+                
+                <h2>Adicionais</h2>
+                
+                <div class="form-group">
+                    <label>Adicionais de Risco:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="periculosidade">
+                            <label for="periculosidade" style="display: inline; margin-top: 0">Periculosidade (30%)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="insalubridade20">
+                            <label for="insalubridade20" style="display: inline; margin-top: 0">Insalubridade (20%)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="insalubridade40">
+                            <label for="insalubridade40" style="display: inline; margin-top: 0">Insalubridade (40%)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="saldo_salario_tipo">Saldo de Salário:</label>
+                    <div class="saldo-tipo">
+                        <select id="saldo_salario_tipo">
+                            <option value="horas">Horas (HH:MM)</option>
+                            <option value="dias">Dias</option>
+                        </select>
+                        <input type="text" id="saldo_salario" placeholder="Ex: 205:20 ou 10">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="horas_extras_50">Horas Extras 50% (HH:MM):</label>
+                    <input type="text" id="horas_extras_50" placeholder="Ex: 61:38">
+                </div>
+                
+                <div class="form-group">
+                    <label for="horas_extras_50_folga">Horas Extras 50% Folga (HH:MM):</label>
+                    <input type="text" id="horas_extras_50_folga" placeholder="Ex: 5:20">
+                </div>
+                
+                <div class="form-group">
+                    <label for="horas_extras_100">Horas Extras 100% (HH:MM):</label>
+                    <input type="text" id="horas_extras_100" placeholder="Ex: 8:01">
+                </div>
+                
+                <div class="form-group">
+                    <label for="horas_extras_100_folga">Horas Extras 100% Folga (HH:MM):</label>
+                    <input type="text" id="horas_extras_100_folga" placeholder="Ex: 2:00">
+                </div>
+                
+                <div class="form-group">
+                    <label for="adicional_noturno">Adicional Noturno (HH:MM):</label>
+                    <input type="text" id="adicional_noturno" placeholder="Ex: 20:34">
+                </div>
+                
+                <div class="form-group">
+                    <label for="saldo_folga">Saldo de Folga Rescisão (dias):</label>
+                    <input type="number" id="saldo_folga" step="0.01" placeholder="Ex: 21">
+                </div>
+                
+                <div class="form-group">
+                    <label for="fgts">Saldo de FGTS (R$):</label>
+                    <input type="number" id="fgts" step="0.01" placeholder="Ex: 1000">
+                </div>
+                
+                <h2>Descontos Variados</h2>
+                <div id="descontos-container">
+                    <div class="dynamic-field">
+                        <input type="text" placeholder="Nome do desconto" class="nome-desconto">
+                        <input type="number" step="0.01" placeholder="Valor (R$)" class="valor-desconto">
+                        <button class="btn-remove" onclick="removerCampo(this)">X</button>
+                    </div>
+                </div>
+                <button class="btn-add" onclick="adicionarDesconto()">+ Adicionar Desconto</button>
+                
+                <h2>Gratificações Variadas</h2>
+                <div id="gratificacoes-container">
+                    <div class="dynamic-field">
+                        <input type="text" placeholder="Nome da gratificação" class="nome-gratificacao">
+                        <input type="number" step="0.01" placeholder="Valor (R$)" class="valor-gratificacao">
+                        <button class="btn-remove" onclick="removerCampo(this)">X</button>
+                    </div>
+                </div>
+                <button class="btn-add" onclick="adicionarGratificacao()">+ Adicionar Gratificação</button>
+                
+                <div class="btn-group">
+                    <button class="btn-calculate" onclick="calcularRescisao()">Calcular Rescisão</button>
+                    <button class="btn-clear" onclick="limparCampos()">Limpar Campos</button>
+                    <button class="btn-copy" onclick="copiarResumo()">Copiar Resumo</button>
+                </div>
+                
+                <div class="card">
+                    <h3>Cálculo de DSR (Descanso Semanal Remunerado)</h3>
+                    <p>O DSR é calculado automaticamente com base na data de demissão, considerando domingos e feriados.</p>
+                    <div id="dsr-info">Informe a data de demissão para calcular o DSR.</div>
+                </div>
+            </div>
+            
+            <div class="results-section">
+                <h2>Resultados da Rescisão</h2>
+                
+                <div id="info-funcionario" class="summary-box" style="display: none;">
+                    <h3>Informações do Funcionário</h3>
+                    <div class="summary-item">
+                        <span>Nome:</span>
+                        <span id="result-nome"></span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Função:</span>
+                        <span id="result-funcao"></span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Período:</span>
+                        <span id="result-periodo"></span>
+                    </div>
+                </div>
+                
+                <div class="section-title">Proventos</div>
+                <table class="results-table" id="proventos-table">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Referência</th>
+                            <th>Valor (R$)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Preenchido via JavaScript -->
+                    </tbody>
+                </table>
+                
+                <div class="section-title">Descontos</div>
+                <table class="results-table" id="descontos-table">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Referência</th>
+                            <th>Valor (R$)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Preenchido via JavaScript -->
+                    </tbody>
+                </table>
+                
+                <div class="summary-box">
+                    <h3>Resumo</h3>
+                    <div class="summary-item">
+                        <span>Total de Proventos:</span>
+                        <span id="total-proventos">R$ 0,00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Total de Descontos:</span>
+                        <span id="total-descontos">R$ 0,00</span>
+                    </div>
+                    <div class="final-value" id="valor-liquido">
+                        Líquido a Receber: R$ 0,00
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="resultado" id="resultado"></div>
-  </div>
+    <div id="toast">Resumo copiado para a área de transferência!</div>
 
-  <div id="toast">Resumo copiado para a área de transferência!</div>
+    <script>
+        // Feriados fixos (dia-mês)
+        const feriadosFixos = ["01-01", "21-04", "01-05", "07-09", "12-10", "02-11", "15-11", "25-12"];
+        
+        function hhmmParaHorasDecimal(hhmm) {
+            if (!hhmm || !hhmm.includes(":")) return parseFloat(hhmm) || 0;
+            const [h, m] = hhmm.split(":").map(Number);
+            return h + m / 60;
+        }
+        
+        function formatarMoeda(valor) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+        }
+        
+        function formatarData(data) {
+            return new Date(data).toLocaleDateString('pt-BR');
+        }
+        
+        function calcularDSR(mes, ano) {
+            let diasUteis = 0;
+            let dsrs = 0;
 
-  <script>
-    function hhmmParaHoras(hhmm) {
-      if (!hhmm || !hhmm.includes(":")) return parseFloat(hhmm) || 0;
-      const [h, m] = hhmm.split(":").map(Number);
-      return h + m / 60;
-    }
+            const ultimoDia = new Date(ano, mes, 0).getDate();
 
-    let resultadoTexto = "";
+            for(let dia = 1; dia <= ultimoDia; dia++) {
+                const data = new Date(ano, mes-1, dia);
+                const semana = data.getDay(); // 0=Dom,1=Seg,...,6=Sab
 
-    function calcular() {
-      const salario = parseFloat(document.getElementById("salario").value) || 0;
-      const tipoSaldo = document.getElementById("tipoSaldo").value;
-      const saldoInput = document.getElementById("saldo").value.trim();
-      let saldoValor = 0;
+                const diaStr = String(dia).padStart(2, '0') + "-" + String(mes).padStart(2, '0');
+                const ehFeriado = feriadosFixos.includes(diaStr);
 
-      if (tipoSaldo === "dias") {
-        saldoValor = (parseFloat(saldoInput) || 0) * (salario / 30);
-      } else {
-        saldoValor = hhmmParaHoras(saldoInput) * (salario / 220);
-      }
+                if(semana === 0 || ehFeriado) { // domingo ou feriado
+                    dsrs++;
+                } else {
+                    diasUteis++;
+                }
+            }
 
-      const folgaDias = parseFloat(document.getElementById("folga").value) || 0;
-      const folgaValor = folgaDias * (salario / 30);
-
-      const he50h = hhmmParaHoras(document.getElementById("he50").value) || 0;
-      const he50valor = he50h * (salario / 220) * 1.5;
-
-      const he100h = hhmmParaHoras(document.getElementById("he100").value) || 0;
-      const he100valor = he100h * (salario / 220) * 2;
-
-      const total = saldoValor + folgaValor + he50valor + he100valor;
-
-      resultadoTexto = `Resultado Estimado:
-Saldo de salário: R$ ${saldoValor.toFixed(2)}
-Folga rescisão: R$ ${folgaValor.toFixed(2)}
-Horas extras 50%: R$ ${he50valor.toFixed(2)}
-Horas extras 100%: R$ ${he100valor.toFixed(2)}
-Total Bruto: R$ ${total.toFixed(2)}`;
-
-      document.getElementById("resultado").textContent = resultadoTexto;
-    }
-
-    function limpar() {
-      document.getElementById("admissao").value = "";
-      document.getElementById("demissao").value = "";
-      document.getElementById("salario").value = "";
-      document.getElementById("tipoSaldo").value = "dias";
-      document.getElementById("saldo").value = "";
-      document.getElementById("folga").value = "";
-      document.getElementById("he50").value = "";
-      document.getElementById("he100").value = "";
-      document.getElementById("resultado").textContent = "";
-      resultadoTexto = "";
-    }
-
-    function copiarResumo() {
-      if (!resultadoTexto) {
-        alert("Calcule antes de copiar o resumo.");
-        return;
-      }
-      navigator.clipboard.writeText(resultadoTexto).then(() => {
-        const toast = document.getElementById("toast");
-        toast.classList.add("show");
-        setTimeout(() => {
-          toast.classList.remove("show");
-        }, 2000);
-      });
-    }
-  </script>
+            return {diasUteis, dsrs};
+        }
+        
+        function adicionarDesconto() {
+            const container = document.getElementById('descontos-container');
+            const novoSpan = document.createElement('div');
+            novoSpan.className = 'dynamic-field';
+            novoSpan.innerHTML = `
+                <input type="text" placeholder="Nome do desconto" class="nome-desconto">
+                <input type="number" step="0.01" placeholder="Valor (R$)" class="valor-desconto">
+                <button class="btn-remove" onclick="removerCampo(this)">X</button>
+            `;
+            container.appendChild(novoSpan);
+        }
+        
+        function adicionarGratificacao() {
+            const container = document.getElementById('gratificacoes-container');
+            const novoSpan = document.createElement('div');
+            novoSpan.className = 'dynamic-field';
+            novoSpan.innerHTML = `
+                <input type="text" placeholder="Nome da gratificação" class="nome-gratificacao">
+                <input type="number" step="0.01" placeholder="Valor (R$)" class="valor-gratificacao">
+                <button class="btn-remove" onclick="removerCampo(this)">X</button>
+            `;
+            container.appendChild(novoSpan);
+        }
+        
+        function removerCampo(botao) {
+            const campo = botao.parentNode;
+            campo.parentNode.removeChild(campo);
+        }
+        
+        function calcularRescisao() {
+            // Obter valores dos campos
+            const nome = document.getElementById("nome").value;
+            const funcao = document.getElementById("funcao").value;
+            const salario = parseFloat(document.getElementById("salario").value) || 0;
+            const dataAdmissao = new Date(document.getElementById("admissao").value);
+            const dataDemissao = new Date(document.getElementById("demissao").value);
+            const tipoDemissao = document.getElementById("tipo").value;
+            const tipoAviso = document.getElementById("aviso").value;
+            const multa480 = document.getElementById("multa480").value;
+            const periculosidade = document.getElementById("periculosidade").checked;
+            const insalubridade20 = document.getElementById("insalubridade20").checked;
+            const insalubridade40 = document.getElementById("insalubridade40").checked;
+            const fgts = parseFloat(document.getElementById("fgts").value) || 0;
+            
+            const saldoSalarioTipo = document.getElementById("saldo_salario_tipo").value;
+            const saldoSalarioInput = document.getElementById("saldo_salario").value;
+            
+            const horasExtras50 = hhmmParaHorasDecimal(document.getElementById("horas_extras_50").value);
+            const horasExtras50Folga = hhmmParaHorasDecimal(document.getElementById("horas_extras_50_folga").value);
+            const horasExtras100 = hhmmParaHorasDecimal(document.getElementById("horas_extras_100").value);
+            const horasExtras100Folga = hhmmParaHorasDecimal(document.getElementById("horas_extras_100_folga").value);
+            const adicionalNoturno = hhmmParaHorasDecimal(document.getElementById("adicional_noturno").value);
+            const saldoFolga = parseFloat(document.getElementById("saldo_folga").value) || 0;
+            
+            // Calcular DSR
+            let dsrInfo = "Informe a data de demissão para calcular o DSR.";
+            let reflexoExtrasDSR = 0;
+            let reflexoAdicionalNoturnoDSR = 0;
+            
+            if (dataDemissao && !isNaN(dataDemissao.getTime())) {
+                const mes = dataDemissao.getMonth() + 1;
+                const ano = dataDemissao.getFullYear();
+                const {diasUteis, dsrs} = calcularDSR(mes, ano);
+                dsrInfo = `No mês da demissão: ${diasUteis} dias úteis e ${dsrs} DSRs (domingos + feriados)`;
+                
+                document.getElementById("dsr-info").textContent = dsrInfo;
+            }
+            
+            // Obter descontos variados
+            const descontosVariados = [];
+            document.querySelectorAll('#descontos-container .dynamic-field').forEach(campo => {
+                const nome = campo.querySelector('.nome-desconto').value;
+                const valor = parseFloat(campo.querySelector('.valor-desconto').value) || 0;
+                if (nome && valor > 0) {
+                    descontosVariados.push({ nome, valor });
+                }
+            });
+            
+            // Obter gratificações variadas
+            const gratificacoesVariadas = [];
+            document.querySelectorAll('#gratificacoes-container .dynamic-field').forEach(campo => {
+                const nome = campo.querySelector('.nome-gratificacao').value;
+                const valor = parseFloat(campo.querySelector('.valor-gratificacao').value) || 0;
+                if (nome && valor > 0) {
+                    gratificacoesVariadas.push({ nome, valor });
+                }
+            });
+            
+            // Calcular saldo de salário
+            let saldoSalarioValor = 0;
+            if (saldoSalarioTipo === "horas") {
+                const saldoSalarioHoras = hhmmParaHorasDecimal(saldoSalarioInput);
+                const valorHora = salario / 220;
+                saldoSalarioValor = saldoSalarioHoras * valorHora;
+            } else {
+                // Se for em dias
+                const dias = parseFloat(saldoSalarioInput) || 0;
+                saldoSalarioValor = dias * (salario / 30);
+            }
+            
+            // Calcular diferença entre datas em meses
+            const diffMeses = (dataDemissao.getFullYear() - dataAdmissao.getFullYear()) * 12 
+                + (dataDemissao.getMonth() - dataAdmissao.getMonth());
+            const mesesTrabalhados = Math.max(diffMeses, 1);
+            
+            // Verificar se tem mais de 1 ano
+            const diffTime = Math.abs(dataDemissao - dataAdmissao);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+            const maisDeUmAno = diffDays > 365;
+            
+            // Definir direitos com base no tipo de demissão
+            let direitos = {
+                saldoSalario: true,
+                avisoPrevio: false,
+                decimoTerceiro: false,
+                feriasVencidas: false,
+                feriasProporcionais: false,
+                umTercoFerias: false,
+                fgtsMes: true,
+                fgtsRescisao: true,
+                multaFgts: false,
+                indenizacao479: false
+            };
+            
+            // Aplicar regras conforme o tipo de demissão
+            switch(tipoDemissao) {
+                case "pedido_demissao":
+                    direitos.decimoTerceiro = true;
+                    direitos.feriasProporcionais = true;
+                    direitos.umTercoFerias = true;
+                    if (maisDeUmAno) direitos.feriasVencidas = true;
+                    break;
+                case "dispensa_sem_justa":
+                    direitos.avisoPrevio = true;
+                    direitos.decimoTerceiro = true;
+                    direitos.feriasProporcionais = true;
+                    direitos.umTercoFerias = true;
+                    direitos.multaFgts = true;
+                    if (maisDeUmAno) direitos.feriasVencidas = true;
+                    break;
+                case "dispensa_com_justa":
+                    if (maisDeUmAno) {
+                        direitos.feriasVencidas = true;
+                        direitos.umTercoFerias = true;
+                    }
+                    break;
+                case "acordo":
+                    direitos.avisoPrevio = true;
+                    direitos.decimoTerceiro = true;
+                    direitos.feriasProporcionais = true;
+                    direitos.umTercoFerias = true;
+                    direitos.multaFgts = true; // 20% neste caso
+                    if (maisDeUmAno) direitos.feriasVencidas = true;
+                    break;
+                case "experiencia_extincao":
+                    direitos.decimoTerceiro = true;
+                    direitos.feriasProporcionais = true;
+                    direitos.umTercoFerias = true;
+                    break;
+                case "experiencia_ant_empregador":
+                    direitos.decimoTerceiro = true;
+                    direitos.feriasProporcionais = true;
+                    direitos.umTercoFerias = true;
+                    direitos.multaFgts = true;
+                    direitos.indenizacao479 = true;
+                    break;
+                case "experiencia_ant_empregado":
+                    direitos.decimoTerceiro = true;
+                    direitos.feriasProporcionais = true;
+                    direitos.umTercoFerias = true;
+                    break;
+            }
+            
+            // Calcular valores
+            const valorHora = salario / 220;
+            
+            // Adicionais de risco
+            let adicionalInsalubridade = 0;
+            if (insalubridade20) adicionalInsalubridade = salario * 0.2;
+            if (insalubridade40) adicionalInsalubridade = salario * 0.4;
+            
+            const adicionalPericulosidade = periculosidade ? salario * 0.3 : 0;
+            
+            const horasExtras50Valor = horasExtras50 * valorHora * 1.5;
+            const horasExtras50FolgaValor = horasExtras50Folga * valorHora * 1.5;
+            const horasExtras100Valor = horasExtras100 * valorHora * 2;
+            const horasExtras100FolgaValor = horasExtras100Folga * valorHora * 2;
+            const adicionalNoturnoValor = adicionalNoturno * (valorHora * 0.2);
+            const saldoFolgaValor = saldoFolga * (salario / 30);
+            
+            // Calcular DSR para reflexos (se houver dados)
+            if (dataDemissao && !isNaN(dataDemissao.getTime())) {
+                const mes = dataDemissao.getMonth() + 1;
+                const ano = dataDemissao.getFullYear();
+                const {diasUteis, dsrs} = calcularDSR(mes, ano);
+                
+                // Calcular reflexos de DSR
+                const totalHorasExtras = horasExtras50Valor + horasExtras50FolgaValor + 
+                                       horasExtras100Valor + horasExtras100FolgaValor;
+                
+                if (diasUteis > 0) {
+                    reflexoExtrasDSR = (totalHorasExtras / diasUteis) * dsrs;
+                    reflexoAdicionalNoturnoDSR = (adicionalNoturnoValor / diasUteis) * dsrs;
+                }
+            }
+            
+            // 13º Salário
+            const decimoTerceiro = direitos.decimoTerceiro ? (salario / 12 * mesesTrabalhados) : 0;
+            
+            // Férias
+            const feriasVencidas = direitos.feriasVencidas ? salario : 0;
+            const feriasProporcionais = direitos.feriasProporcionais ? (salario / 12 * mesesTrabalhados) : 0;
+            const umTercoFerias = direitos.umTercoFerias ? ((feriasVencidas + feriasProporcionais) / 3) : 0;
+            
+            // Aviso prévio
+            let avisoPrevioValor = 0;
+            if (direitos.avisoPrevio) {
+                if (tipoAviso === "indenizado") {
+                    avisoPrevioValor = salario + (maisDeUmAno ? salario / 30 * 3 : 0);
+                } else if (tipoAviso === "trabalhado") {
+                    // Valor já incluso no saldo de salário
+                }
+                // Para "dispensado" não há valor a ser pago
+            }
+            
+            // Multa do FGTS
+            let multaFgtsValor = 0;
+            if (direitos.multaFgts) {
+                if (tipoDemissao === "acordo") {
+                    multaFgtsValor = fgts * 0.2; // 20% para acordo
+                } else {
+                    multaFgtsValor = fgts * 0.4; // 40% para outros casos
+                }
+            }
+            
+            // Indenização Art. 479 CLT
+            const indenizacao479 = direitos.indenizacao479 ? (salario / 30 * 3) : 0;
+            
+            // INSS
+            const baseInss = saldoSalarioValor + feriasProporcionais + umTercoFerias + decimoTerceiro;
+            const inssRescisao = baseInss * 0.1162;
+            const inssDecimoTerceiro = decimoTerceiro * 0.075;
+            
+            // IRRF
+            const baseCalculoIRRF = saldoSalarioValor + feriasProporcionais + umTercoFerias + decimoTerceiro;
+            const irrfRescisao = baseCalculoIRRF * 0.275;
+            
+            // Multa Art. 480 CLT
+            const multa480Valor = (multa480 === "sim") ? (salario / 30 * 3) : 0;
+            
+            // Totais
+            let totalProventos = saldoSalarioValor + adicionalInsalubridade + adicionalPericulosidade + 
+                                horasExtras50Valor + horasExtras50FolgaValor + horasExtras100Valor + 
+                                horasExtras100FolgaValor + adicionalNoturnoValor + saldoFolgaValor + 
+                                reflexoExtrasDSR + reflexoAdicionalNoturnoDSR + decimoTerceiro + 
+                                feriasVencidas + feriasProporcionais + umTercoFerias + avisoPrevioValor + 
+                                multaFgtsValor + indenizacao479;
+            
+            // Adicionar gratificações variadas
+            gratificacoesVariadas.forEach(gratificacao => {
+                totalProventos += gratificacao.valor;
+            });
+            
+            let totalDescontos = inssRescisao + inssDecimoTerceiro + irrfRescisao + multa480Valor;
+            
+            // Adicionar descontos variados
+            descontosVariados.forEach(desconto => {
+                totalDescontos += desconto.valor;
+            });
+            
+            const liquido = totalProventos - totalDescontos;
+            
+            // Preencher informações do funcionário
+            if (nome && dataAdmissao && dataDemissao) {
+                document.getElementById("info-funcionario").style.display = 'block';
+                document.getElementById("result-nome").textContent = nome;
+                document.getElementById("result-funcao").textContent = funcao || 'Não informado';
+                document.getElementById("result-periodo").textContent = `${formatarData(dataAdmissao)} a ${formatarData(dataDemissao)}`;
+            }
+            
+            // Preencher tabela de proventos
+            const proventosTable = document.getElementById("proventos-table").querySelector("tbody");
+            let proventosHTML = `
+                <tr>
+                    <td>Saldo de Salário</td>
+                    <td>${saldoSalarioTipo === 'horas' ? (document.getElementById("saldo_salario").value || '0') + ' horas' : (document.getElementById("saldo_salario").value || '0') + ' dias'}</td>
+                    <td>${formatarMoeda(saldoSalarioValor)}</td>
+                </tr>`;
+            
+            if (adicionalInsalubridade > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Insalubridade ${insalubridade20 ? '20%' : '40%'}</td>
+                    <td>Mensal</td>
+                    <td>${formatarMoeda(adicionalInsalubridade)}</td>
+                </tr>`;
+            }
+            
+            if (adicionalPericulosidade > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Periculosidade 30%</td>
+                    <td>Mensal</td>
+                    <td>${formatarMoeda(adicionalPericulosidade)}</td>
+                </tr>`;
+            }
+            
+            proventosHTML += `
+                <tr>
+                    <td>Horas Extras 50%</td>
+                    <td>${document.getElementById("horas_extras_50").value || '0'} horas</td>
+                    <td>${formatarMoeda(horasExtras50Valor)}</td>
+                </tr>
+                <tr>
+                    <td>Horas Extras 50% Folga</td>
+                    <td>${document.getElementById("horas_extras_50_folga").value || '0'} horas</td>
+                    <td>${formatarMoeda(horasExtras50FolgaValor)}</td>
+                </tr>
+                <tr>
+                    <td>Horas Extras 100%</td>
+                    <td>${document.getElementById("horas_extras_100").value || '0'} horas</td>
+                    <td>${formatarMoeda(horasExtras100Valor)}</td>
+                </tr>
+                <tr>
+                    <td>Horas Extras 100% Folga</td>
+                    <td>${document.getElementById("horas_extras_100_folga").value || '0'} horas</td>
+                    <td>${formatarMoeda(horasExtras100FolgaValor)}</td>
+                </tr>
+                <tr>
+                    <td>Adicional Noturno</td>
+                    <td>${document.getElementById("adicional_noturno").value || '0'} horas</td>
+                    <td>${formatarMoeda(adicionalNoturnoValor)}</td>
+                </tr>
+                <tr>
+                    <td>Reflexo Extras DSR</td>
+                    <td>Proporcional</td>
+                    <td>${formatarMoeda(reflexoExtrasDSR)}</td>
+                </tr>
+                <tr>
+                    <td>Reflexo Adicional Noturno DSR</td>
+                    <td>Proporcional</td>
+                    <td>${formatarMoeda(reflexoAdicionalNoturnoDSR)}</td>
+                </tr>
+                <tr>
+                    <td>Saldo de Folga Rescisão</td>
+                    <td>${saldoFolga} dias</td>
+                    <td>${formatarMoeda(saldoFolgaValor)}</td>
+                </tr>`;
+            
+            if (decimoTerceiro > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>13º Salário Proporcional</td>
+                    <td>${mesesTrabalhados} meses</td>
+                    <td>${formatarMoeda(decimoTerceiro)}</td>
+                </tr>`;
+            }
+            
+            if (feriasVencidas > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Férias Vencidas</td>
+                    <td>30 dias</td>
+                    <td>${formatarMoeda(feriasVencidas)}</td>
+                </tr>`;
+            }
+            
+            if (feriasProporcionais > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Férias Proporcionais</td>
+                    <td>${mesesTrabalhados} meses</td>
+                    <td>${formatarMoeda(feriasProporcionais)}</td>
+                </tr>`;
+            }
+            
+            if (umTercoFerias > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>1/3 Férias</td>
+                    <td>33,33%</td>
+                    <td>${formatarMoeda(umTercoFerias)}</td>
+                </tr>`;
+            }
+            
+            if (avisoPrevioValor > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Aviso Prévio Indenizado</td>
+                    <td>${maisDeUmAno ? '30+3 dias' : '30 dias'}</td>
+                    <td>${formatarMoeda(avisoPrevioValor)}</td>
+                </tr>`;
+            }
+            
+            if (multaFgtsValor > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Multa FGTS</td>
+                    <td>${tipoDemissao === "acordo" ? '20%' : '40%'}</td>
+                    <td>${formatarMoeda(multaFgtsValor)}</td>
+                </tr>`;
+            }
+            
+            if (indenizacao479 > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Indenização Art. 479 CLT</td>
+                    <td>3 dias</td>
+                    <td>${formatarMoeda(indenizacao479)}</td>
+                </tr>`;
+            }
+            
+            // Adicionar gratificações variadas
+            gratificacoesVariadas.forEach(gratificacao => {
+                proventosHTML += `
+                <tr>
+                    <td>${gratificacao.nome}</td>
+                    <td>Gratificação</td>
+                    <td>${formatarMoeda(gratificacao.valor)}</td>
+                </tr>`;
+            });
+            
+            proventosHTML += `
+                <tr class="total-row">
+                    <td colspan="2">Total de Proventos</td>
+                    <td>${formatarMoeda(totalProventos)}</td>
+                </tr>`;
+            
+            proventosTable.innerHTML = proventosHTML;
+            
+            // Preencher tabela de descontos
+            const descontosTable = document.getElementById("descontos-table").querySelector("tbody");
+            let descontosHTML = `
+                <tr>
+                    <td>INSS sobre Rescisão</td>
+                    <td>11,62%</td>
+                    <td>${formatarMoeda(inssRescisao)}</td>
+                </tr>`;
+            
+            if (inssDecimoTerceiro > 0) {
+                descontosHTML += `
+                <tr>
+                    <td>INSS 13º Salário</td>
+                    <td>7,5%</td>
+                    <td>${formatarMoeda(inssDecimoTerceiro)}</td>
+                </tr>`;
+            }
+            
+            descontosHTML += `
+                <tr>
+                    <td>IRRF sobre Rescisão</td>
+                    <td>27,5%</td>
+                    <td>${formatarMoeda(irrfRescisao)}</td>
+                </tr>`;
+            
+            if (multa480Valor > 0) {
+                descontosHTML += `
+                <tr>
+                    <td>Multa Art. 480 CLT</td>
+                    <td>3 dias</td>
+                    <td>${formatarMoeda(multa480Valor)}</td>
+                </tr>`;
+            }
+            
+            // Adicionar descontos variados
+            descontosVariados.forEach(desconto => {
+                descontosHTML += `
+                <tr>
+                    <td>${desconto.nome}</td>
+                    <td>Desconto</td>
+                    <td>${formatarMoeda(desconto.valor)}</td>
+                </tr>`;
+            });
+            
+            descontosHTML += `
+                <tr class="total-row">
+                    <td colspan="2">Total de Descontos</td>
+                    <td>${formatarMoeda(totalDescontos)}</td>
+                </tr>`;
+            
+            descontosTable.innerHTML = descontosHTML;
+            
+            // Atualizar totais
+            document.getElementById("total-proventos").textContent = formatarMoeda(totalProventos);
+            document.getElementById("total-descontos").textContent = formatarMoeda(totalDescontos);
+            document.getElementById("valor-liquido").textContent = `Líquido a Receber: ${formatarMoeda(liquido)}`;
+        }
+        
+        function limparCampos() {
+            document.getElementById("nome").value = "";
+            document.getElementById("funcao").value = "";
+            document.getElementById("salario").value = "";
+            document.getElementById("admissao").value = "";
+            document.getElementById("demissao").value = "";
+            document.getElementById("tipo").value = "";
+            document.getElementById("aviso").value = "indenizado";
+            document.getElementById("multa480").value = "nao";
+            document.getElementById("periculosidade").checked = false;
+            document.getElementById("insalubridade20").checked = false;
+            document.getElementById("insalubridade40").checked = false;
+            document.getElementById("saldo_salario_tipo").value = "horas";
+            document.getElementById("saldo_salario").value = "";
+            document.getElementById("horas_extras_50").value = "";
+            document.getElementById("horas_extras_50_folga").value = "";
+            document.getElementById("horas_extras_100").value = "";
+            document.getElementById("horas_extras_100_folga").value = "";
+            document.getElementById("adicional_noturno").value = "";
+            document.getElementById("saldo_folga").value = "";
+            document.getElementById("fgts").value = "";
+            
+            // Limpar descontos variados
+            document.getElementById("descontos-container").innerHTML = `
+                <div class="dynamic-field">
+                    <input type="text" placeholder="Nome do desconto" class="nome-desconto">
+                    <input type="number" step="0.01" placeholder="Valor (R$)" class="valor-desconto">
+                    <button class="btn-remove" onclick="removerCampo(this)">X</button>
+                </div>
+            `;
+            
+            // Limpar gratificações variadas
+            document.getElementById("gratificacoes-container").innerHTML = `
+                <div class="dynamic-field">
+                    <input type="text" placeholder="Nome da gratificação" class="nome-gratificacao">
+                    <input type="number" step="0.01" placeholder="Valor (R$)" class="valor-gratificacao">
+                    <button class="btn-remove" onclick="removerCampo(this)">X</button>
+                </div>
+            `;
+            
+            // Limpar resultados
+            document.getElementById("info-funcionario").style.display = 'none';
+            document.getElementById("dsr-info").textContent = "Informe a data de demissão para calcular o DSR.";
+            document.getElementById("proventos-table").querySelector("tbody").innerHTML = "";
+            document.getElementById("descontos-table").querySelector("tbody").innerHTML = "";
+            document.getElementById("total-proventos").textContent = "R$ 0,00";
+            document.getElementById("total-descontos").textContent = "R$ 0,00";
+            document.getElementById("valor-liquido").textContent = "Líquido a Receber: R$ 0,00";
+        }
+        
+        function copiarResumo() {
+            const totalProventos = document.getElementById("total-proventos").textContent;
+            const totalDescontos = document.getElementById("total-descontos").textContent;
+            const valorLiquido = document.getElementById("valor-liquido").textContent;
+            
+            const textoResumo = `RESUMO DA RESCISÃO:
+Total de Proventos: ${totalProventos}
+Total de Descontos: ${totalDescontos}
+${valorLiquido}`;
+            
+            navigator.clipboard.writeText(textoResumo).then(() => {
+                const toast = document.getElementById("toast");
+                toast.classList.add("show");
+                setTimeout(() => {
+                    toast.classList.remove("show");
+                }, 2000);
+            });
+        }
+    </script>
+  <footer style="text-align: center; padding: 20px; background-color: #222; color: #fff;">
+    &copy; 2025 Lucas Freire. Todos os direitos reservados.
+</footer>
 </body>
 </html>
