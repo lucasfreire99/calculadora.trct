@@ -1,696 +1,1595 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <title>Agendador de Notificações</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Rescisão Trabalhista</title>
     <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        
+        /* Modo escuro */
+        [data-theme="dark"] {
+            --primary: #1a1a2e;
+            --secondary: #0f3460;
+            --light: #2d2d44;
+            --dark: #16213e;
+            --bg-primary: #1e1e2f;
+            --bg-secondary: #25253a;
+            --text-primary: #eee;
+            --text-secondary: #ccc;
+            --border-color: #3d3d5c;
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9f9f9;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --border-color: #ddd;
+        }
+        
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
-
+        
         body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: #f1f5f9;
-            padding: 20px 16px 40px;
-            color: #0f172a;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Header */
-        .header {
-            margin-bottom: 24px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            background: linear-gradient(135deg, #1e293b, #3b82f6);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            letter-spacing: -0.3px;
-        }
-
-        .header p {
-            font-size: 0.85rem;
-            color: #475569;
-            margin-top: 6px;
-        }
-
-        /* Card de criação */
-        .card {
-            background: white;
-            border-radius: 28px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
             padding: 20px;
-            margin-bottom: 28px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.02);
-            transition: all 0.2s ease;
+            min-height: 100vh;
+            transition: all 0.3s ease;
         }
-
-        .form-group {
-            margin-bottom: 18px;
+        
+        body[data-theme="dark"] {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         }
-
-        label {
-            display: block;
-            font-weight: 500;
-            font-size: 0.85rem;
-            margin-bottom: 6px;
-            color: #334155;
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
-
-        input, textarea {
-            width: 100%;
-            padding: 14px 16px;
-            font-size: 1rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 20px;
-            background: #ffffff;
-            transition: 0.2s;
-            font-family: inherit;
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        /* Data/hora local */
-        .datetime-row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .datetime-row .form-group {
-            flex: 1;
-            min-width: 120px;
-        }
-
-        button {
-            background: #3b82f6;
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
             border: none;
-            border-radius: 40px;
-            padding: 14px 20px;
-            font-size: 1rem;
-            font-weight: 600;
-            width: 100%;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
             cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+        
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .progress-container {
+            margin-top: 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            height: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            background: var(--success);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
         }
-
-        button:active {
-            transform: scale(0.97);
-            background: #2563eb;
-        }
-
-        .btn-secondary {
-            background: #f1f5f9;
-            color: #1e293b;
-            box-shadow: none;
-            margin-top: 8px;
-        }
-
-        .btn-secondary:active {
-            background: #e2e8f0;
-        }
-
-        /* Lista de notificações */
-        .section-title {
+        
+        .main-content {
             display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 14px;
             flex-wrap: wrap;
         }
-
-        .section-title h2 {
-            font-size: 1.35rem;
+        
+        .form-section {
+            flex: 1;
+            min-width: 350px;
+            padding: 20px;
+        }
+        
+        .results-section {
+            flex: 2;
+            min-width: 400px;
+            padding: 20px;
+            background-color: var(--bg-secondary);
+            border-left: 1px solid var(--border-color);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
             font-weight: 600;
+            color: var(--text-primary);
         }
-
-        .badge-count {
-            background: #e2e8f0;
-            padding: 4px 10px;
-            border-radius: 40px;
-            font-size: 0.75rem;
-            font-weight: 500;
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            background: var(--bg-primary);
+            color: var(--text-primary);
         }
-
-        .notif-list {
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+        
+        .checkbox-group {
             display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
         }
-
-        .notif-item {
-            background: white;
-            border-radius: 24px;
-            padding: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-            border: 1px solid #eef2ff;
-            transition: 0.1s;
-            position: relative;
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
-
-        .notif-item.expired {
-            opacity: 0.6;
-            background: #f8fafc;
-            border-left: 4px solid #94a3b8;
+        
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
         }
-
-        .notif-title {
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 6px;
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-calculate {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-calculate:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+        }
+        
+        .btn-clear {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .btn-clear:hover {
+            background-color: #e67e22;
+            transform: translateY(-2px);
+        }
+        
+        .btn-copy {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-copy:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-export {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-export:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-add {
+            background-color: var(--primary);
+            color: white;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+        
+        .btn-remove {
+            background-color: var(--danger);
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 3px;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .results-table th {
+            background-color: var(--primary);
+            color: white;
+            text-align: left;
+            padding: 12px;
+        }
+        
+        .results-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .results-table tr:nth-child(even) {
+            background-color: var(--bg-primary);
+        }
+        
+        .results-table tr:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .total-row {
+            font-weight: bold;
+            background-color: rgba(46, 204, 113, 0.2) !important;
+        }
+        
+        .section-title {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        
+        .summary-box {
+            background-color: rgba(52, 152, 219, 0.1);
+            border-left: 5px solid var(--secondary);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        
+        .summary-item {
             display: flex;
             justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .final-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--success);
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(46, 204, 113, 0.1);
+            border-radius: 5px;
+        }
+        
+        .dynamic-field {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
             align-items: center;
         }
-
-        .notif-msg {
-            font-size: 0.9rem;
-            color: #334155;
-            margin-bottom: 10px;
-            word-break: break-word;
+        
+        .dynamic-field input {
+            flex: 1;
         }
-
-        .notif-time {
-            font-size: 0.7rem;
-            font-family: monospace;
-            background: #f1f5f9;
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 30px;
-            color: #475569;
+        
+        .saldo-tipo {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
-
-        .notif-status {
-            font-size: 0.7rem;
-            margin-left: 8px;
-            color: #ef4444;
-        }
-
-        .delete-btn {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: #94a3b8;
-            padding: 6px;
+        
+        .saldo-tipo select {
             width: auto;
-            box-shadow: none;
-            border-radius: 40px;
         }
-
-        .delete-btn:active {
-            color: #ef4444;
-            transform: scale(0.95);
-            background: none;
+        
+        .card {
+            background: var(--bg-primary);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            border: 1px solid var(--border-color);
         }
-
-        .empty-state {
-            text-align: center;
-            padding: 32px 20px;
-            background: #ffffffcc;
-            border-radius: 32px;
-            color: #64748b;
-            font-size: 0.9rem;
-        }
-
-        .toast-message {
+        
+        #toast {
             position: fixed;
-            bottom: 24px;
-            left: 16px;
-            right: 16px;
-            background: #1e293be6;
-            backdrop-filter: blur(8px);
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--secondary);
             color: white;
-            text-align: center;
-            padding: 12px;
-            border-radius: 60px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            z-index: 1000;
-            transition: opacity 0.3s;
+            padding: 15px 25px;
+            border-radius: 5px;
+            font-size: 16px;
             opacity: 0;
             pointer-events: none;
+            transition: opacity 0.3s ease-in-out;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 16px 12px 30px;
+        
+        #toast.show {
+            opacity: 1;
+        }
+        
+        .tooltip {
+            position: relative;
+            cursor: help;
+            display: inline-block;
+            margin-left: 5px;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 8px;
+            border-radius: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px;
+            font-size: 12px;
+            font-weight: normal;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .auto-save-indicator {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
             }
-            .card {
-                padding: 18px;
+            
+            .results-section {
+                border-left: none;
+                border-top: 1px solid var(--border-color);
+            }
+            
+            .dynamic-field, .saldo-tipo {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .saldo-tipo select {
+                width: 100%;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
             }
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
-<body>
-<div class="container">
-    <div class="header">
-        <h1>🔔 NotificaMais</h1>
-        <p>Agende lembretes e receba no horário exato</p>
-    </div>
-
-    <!-- Formulário de criação -->
-    <div class="card">
-        <div class="form-group">
-            <label>Título da notificação</label>
-            <input type="text" id="notifTitle" placeholder="Ex: Reunião importante" maxlength="50">
-        </div>
-        <div class="form-group">
-            <label>Mensagem</label>
-            <textarea id="notifMsg" placeholder="Descreva o lembrete..."></textarea>
-        </div>
-        <div class="datetime-row">
-            <div class="form-group">
-                <label>📅 Data</label>
-                <input type="date" id="notifDate">
+<body data-theme="light">
+    <div class="container">
+        <header>
+            <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+            <h1>Calculadora de Rescisão Trabalhista</h1>
+            <p class="subtitle">Cálculo completo conforme a CLT</p>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar">0%</div>
             </div>
-            <div class="form-group">
-                <label>⏰ Hora</label>
-                <input type="time" id="notifTime">
+        </header>
+        
+        <div class="main-content">
+            <div class="form-section">
+                <h2>Dados do Funcionário</h2>
+                
+                <div class="form-group">
+                    <label for="nome">Nome do Funcionário:</label>
+                    <input type="text" id="nome" placeholder="Nome completo do funcionário">
+                </div>
+                
+                <div class="form-group">
+                    <label for="funcao">Função/Cargo:</label>
+                    <input type="text" id="funcao" placeholder="Cargo do funcionário">
+                </div>
+                
+                <div class="form-group">
+                    <label for="dependentes">Número de Dependentes (IRRF):</label>
+                    <input type="number" id="dependentes" min="0" value="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="salario">Salário Base (R$):</label>
+                    <input type="number" id="salario" step="0.01" placeholder="Ex: 2752.89">
+                </div>
+                
+                <div class="form-group">
+                    <label for="admissao">Data de Admissão:</label>
+                    <input type="date" id="admissao">
+                </div>
+                
+                <div class="form-group">
+                    <label for="demissao">Data de Demissão:</label>
+                    <input type="date" id="demissao">
+                </div>
+                
+                <div class="form-group">
+                    <label for="tipo">Tipo de Demissão:</label>
+                    <select id="tipo">
+                        <option value="" selected disabled>Selecione o tipo de demissão</option>
+                        <option value="pedido_demissao">Pedido de Demissão</option>
+                        <option value="dispensa_sem_justa">Dispensa Sem Justa Causa</option>
+                        <option value="dispensa_com_justa">Dispensa Com Justa Causa</option>
+                        <option value="acordo">Acordo entre as Partes</option>
+                        <option value="experiencia_extincao">Término Contrato Experiência</option>
+                        <option value="experiencia_ant_empregador">Rescisão Contrato Experiência Antecipada pelo Empregador</option>
+                        <option value="experiencia_ant_empregado">Rescisão Contrato Experiência Antecipada pelo Empregado</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="aviso">Tipo de Aviso Prévio:</label>
+                    <select id="aviso">
+                        <option value="indenizado">Indenizado</option>
+                        <option value="trabalhado">Trabalhado</option>
+                        <option value="dispensado">Dispensado</option>
+                    </select>
+                    <span class="tooltip">ⓘ
+                        <span class="tooltip-text">Aviso prévio indenizado: pago em dinheiro, sem necessidade de trabalhar. Trabalhado: cumpre expediente normalmente. Dispensado: não precisa trabalhar nem receber.</span>
+                    </span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="multa480">Descontar Multa do Art. 480 da CLT:</label>
+                    <select id="multa480">
+                        <option value="nao">Não</option>
+                        <option value="sim">Sim</option>
+                    </select>
+                    <span class="tooltip">ⓘ
+                        <span class="tooltip-text">Multa aplicável quando empregado pede demissão antes de concluir contrato de experiência.</span>
+                    </span>
+                </div>
+                
+                <h2>Adicionais</h2>
+                
+                <div class="form-group">
+                    <label>Adicionais de Risco:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="periculosidade">
+                            <label for="periculosidade" style="display: inline; margin-top: 0">Periculosidade (30%)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="insalubridade20">
+                            <label for="insalubridade20" style="display: inline; margin-top: 0">Insalubridade (20%)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="insalubridade40">
+                            <label for="insalubridade40" style="display: inline; margin-top: 0">Insalubridade (40%)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="saldo_salario_tipo">Saldo de Salário:</label>
+                    <div class="saldo-tipo">
+                        <select id="saldo_salario_tipo">
+                            <option value="horas">Horas (HH:MM)</option>
+                            <option value="dias">Dias</option>
+                        </select>
+                        <input type="text" id="saldo_salario" placeholder="Ex: 205:20 ou 10" oninput="aplicarMascaraHora(this)">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="horas_extras_50">Horas Extras 50% (HH:MM):</label>
+                    <input type="text" id="horas_extras_50" placeholder="Ex: 61:38" oninput="aplicarMascaraHora(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="horas_extras_50_folga">Horas Extras 50% Folga (HH:MM):</label>
+                    <input type="text" id="horas_extras_50_folga" placeholder="Ex: 5:20" oninput="aplicarMascaraHora(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="horas_extras_100">Horas Extras 100% (HH:MM):</label>
+                    <input type="text" id="horas_extras_100" placeholder="Ex: 8:01" oninput="aplicarMascaraHora(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="horas_extras_100_folga">Horas Extras 100% Folga (HH:MM):</label>
+                    <input type="text" id="horas_extras_100_folga" placeholder="Ex: 2:00" oninput="aplicarMascaraHora(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="adicional_noturno">Adicional Noturno (HH:MM):</label>
+                    <input type="text" id="adicional_noturno" placeholder="Ex: 20:34" oninput="aplicarMascaraHora(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="saldo_folga">Saldo de Folga Rescisão (dias):</label>
+                    <input type="number" id="saldo_folga" step="0.01" placeholder="Ex: 21">
+                </div>
+                
+                <div class="form-group">
+                    <label for="fgts">Saldo de FGTS (R$):</label>
+                    <input type="number" id="fgts" step="0.01" placeholder="Ex: 1000">
+                </div>
+                
+                <h2>Descontos Variados</h2>
+                <div id="descontos-container">
+                    <div class="dynamic-field">
+                        <input type="text" placeholder="Nome do desconto" class="nome-desconto">
+                        <input type="number" step="0.01" placeholder="Valor (R$)" class="valor-desconto">
+                        <button class="btn-remove" onclick="removerCampo(this)">X</button>
+                    </div>
+                </div>
+                <button class="btn-add" onclick="adicionarDesconto()">+ Adicionar Desconto</button>
+                
+                <h2>Gratificações Variadas</h2>
+                <div id="gratificacoes-container">
+                    <div class="dynamic-field">
+                        <input type="text" placeholder="Nome da gratificação" class="nome-gratificacao">
+                        <input type="number" step="0.01" placeholder="Valor (R$)" class="valor-gratificacao">
+                        <button class="btn-remove" onclick="removerCampo(this)">X</button>
+                    </div>
+                </div>
+                <button class="btn-add" onclick="adicionarGratificacao()">+ Adicionar Gratificação</button>
+                
+                <div class="btn-group">
+                    <button class="btn-calculate" onclick="calcularRescisao()">Calcular Rescisão</button>
+                    <button class="btn-clear" onclick="limparCampos()">Limpar Campos</button>
+                    <button class="btn-copy" onclick="copiarResumo()">Copiar Resumo</button>
+                    <button class="btn-export" onclick="exportarPDF()">📄 Exportar PDF</button>
+                </div>
+                
+                <div class="card">
+                    <h3>Cálculo de DSR (Descanso Semanal Remunerado)</h3>
+                    <p>O DSR é calculado automaticamente com base na data de demissão, considerando domingos e feriados.</p>
+                    <div id="dsr-info">Informe a data de demissão para calcular o DSR.</div>
+                </div>
+            </div>
+            
+            <div class="results-section">
+                <h2>Resultados da Rescisão</h2>
+                
+                <div id="info-funcionario" class="summary-box" style="display: none;">
+                    <h3>Informações do Funcionário</h3>
+                    <div class="summary-item">
+                        <span>Nome:</span>
+                        <span id="result-nome"></span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Função:</span>
+                        <span id="result-funcao"></span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Período:</span>
+                        <span id="result-periodo"></span>
+                    </div>
+                </div>
+                
+                <div class="section-title">Proventos</div>
+                <table class="results-table" id="proventos-table">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Referência</th>
+                            <th>Valor (R$)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Preenchido via JavaScript -->
+                    </tbody>
+                </table>
+                
+                <div class="section-title">Descontos</div>
+                <table class="results-table" id="descontos-table">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Referência</th>
+                            <th>Valor (R$)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Preenchido via JavaScript -->
+                    </tbody>
+                </table>
+                
+                <div class="summary-box">
+                    <h3>Resumo</h3>
+                    <div class="summary-item">
+                        <span>Total de Proventos:</span>
+                        <span id="total-proventos">R$ 0,00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Total de Descontos:</span>
+                        <span id="total-descontos">R$ 0,00</span>
+                    </div>
+                    <div class="final-value" id="valor-liquido">
+                        Líquido a Receber: R$ 0,00
+                    </div>
+                </div>
             </div>
         </div>
-        <button id="scheduleBtn">➕ Programar notificação</button>
-        <button id="testPermissionBtn" class="btn-secondary">🔔 Permitir notificações</button>
     </div>
-
-    <!-- Lista de notificações agendadas -->
-    <div class="section-title">
-        <h2>📋 Lembretes ativos</h2>
-        <span class="badge-count" id="counterBadge">0</span>
-    </div>
-    <div id="notificationsList" class="notif-list">
-        <div class="empty-state">✨ Nenhum lembrete programado.<br>Crie um acima!</div>
-    </div>
-</div>
-<div id="toastMsg" class="toast-message"></div>
-
-<script>
-    // ---------- PERMISSÃO E SUPORTE ----------
-    const isBrowserSupported = () => {
-        return 'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
-    };
-
-    // Como não estamos usando service worker real para push (apenas notificações agendadas com timeout/local),
-    // usamos Notification API + verificação de permissão + timeouts e intervalos.
-    // Mas para agendamentos futuros mesmo com app fechado? Infelizmente web precisa estar aberta.
-    // Para uma PWA, poderiamos usar Background Sync, mas neste exemplo usamos verificação periódica
-    // com "requestIdleCallback" e salvamos no localStorage. Quando o usuário reabrir o app ou estiver ativo,
-    // as notificações serão disparadas na hora certa (se o navegador estiver aberto).
-    // Estratégia: salvar lista + checar a cada minuto se alguma notificação atingiu o horário.
     
-    let scheduledNotifications = []; // { id, title, message, timestamp, triggered }
-    let intervalChecker = null;
-    let permissionGranted = false;
-
-    // Elementos
-    const titleInput = document.getElementById('notifTitle');
-    const msgInput = document.getElementById('notifMsg');
-    const dateInput = document.getElementById('notifDate');
-    const timeInput = document.getElementById('notifTime');
-    const scheduleBtn = document.getElementById('scheduleBtn');
-    const testPermBtn = document.getElementById('testPermissionBtn');
-    const notifListDiv = document.getElementById('notificationsList');
-    const counterBadge = document.getElementById('counterBadge');
-    const toastEl = document.getElementById('toastMsg');
-
-    // Utilitários
-    function showToast(msg, duration = 2500) {
-        toastEl.textContent = msg;
-        toastEl.style.opacity = '1';
-        setTimeout(() => {
-            toastEl.style.opacity = '0';
-        }, duration);
-    }
-
-    // Salvar no localStorage
-    function saveToLocalStorage() {
-        const toStore = scheduledNotifications.map(n => ({
-            id: n.id,
-            title: n.title,
-            message: n.message,
-            timestamp: n.timestamp,
-            triggered: n.triggered
-        }));
-        localStorage.setItem('scheduledNotifs', JSON.stringify(toStore));
-    }
-
-    // Carregar do localStorage
-    function loadFromLocalStorage() {
-        const stored = localStorage.getItem('scheduledNotifs');
-        if (stored) {
-            try {
-                const parsed = JSON.parse(stored);
-                scheduledNotifications = parsed.map(p => ({
-                    ...p,
-                    triggered: p.triggered || false
-                }));
-            } catch(e) { console.warn(e); }
+    <div id="toast">Resumo copiado para a área de transferência!</div>
+    <div class="auto-save-indicator" id="auto-save-indicator">✓ Rascunho salvo</div>
+    
+    <footer style="text-align: center; padding: 15px; background-color: var(--primary); color: #fff; margin-top: 20px;">
+        &copy; 2026 Lucas Freire. Todos os direitos reservados.
+    </footer>
+    
+    <script>
+        // Feriados fixos (dia-mês)
+        const feriadosFixos = ["01-01", "21-04", "01-05", "07-09", "12-10", "02-11", "15-11", "25-12"];
+        let autoSaveInterval;
+        
+        // Função para máscara de hora
+        function aplicarMascaraHora(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length >= 3) {
+                value = value.slice(0, -2) + ':' + value.slice(-2);
+            }
+            input.value = value;
         }
-        // limpar notificações já vencidas (timestamp passado e já triggered? Mas se não triggered, verificaremos depois)
-        renderNotifications();
-        updateCounter();
-    }
-
-    // Verificar permissão atual
-    function updatePermissionStatus() {
-        if (!isBrowserSupported()) {
-            permissionGranted = false;
-            return false;
+        
+        // Função para converter HH:MM para horas decimais
+        function hhmmParaHorasDecimal(hhmm) {
+            if (!hhmm || !hhmm.includes(":")) return parseFloat(hhmm) || 0;
+            const [h, m] = hhmm.split(":").map(Number);
+            return h + m / 60;
         }
-        if (Notification.permission === 'granted') {
-            permissionGranted = true;
-            return true;
-        } else if (Notification.permission === 'denied') {
-            permissionGranted = false;
-            return false;
-        } else {
-            permissionGranted = false;
-            return false;
+        
+        // Função para formatar moeda
+        function formatarMoeda(valor) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
         }
-    }
-
-    // Solicitar permissão
-    async function rKaNCgLvMEXxNzMxj2F7FYi1AdRrTo6Nhu() {
-        if (!isBrowserSupported()) {
-            showToast("❌ Seu navegador não suporta notificações web.");
-            return false;
+        
+        // Função para formatar data
+        function formatarData(data) {
+            return new Date(data).toLocaleDateString('pt-BR');
         }
-        if (Notification.permission === 'granted') {
-            showToast("✅ Permissão já concedida!");
-            permissionGranted = true;
-            return true;
+        
+        // Função para calcular INSS progressivo
+        function calcularINSS(salarioBruto) {
+            const faixas = [
+                { ate: 1412.00, aliquota: 0.075 },
+                { ate: 2666.68, aliquota: 0.09 },
+                { ate: 4000.03, aliquota: 0.12 },
+                { ate: 7786.02, aliquota: 0.14 }
+            ];
+            
+            let inss = 0;
+            let restante = salarioBruto;
+            let faixaAnterior = 0;
+            
+            for (const faixa of faixas) {
+                const base = Math.min(restante, faixa.ate - faixaAnterior);
+                if (base <= 0) break;
+                inss += base * faixa.aliquota;
+                restante -= base;
+                faixaAnterior = faixa.ate;
+            }
+            return Math.min(inss, 908.85);
         }
-        if (Notification.permission === 'denied') {
-            showToast("🚫 Permissão negada. Altere nas configurações do site.");
-            return false;
-        }
-        const permission = await Notification.requestPermission();
-        if (permission === 'granted') {
-            permissionGranted = true;
-            showToast("🔔 Notificações ativadas! Agora você receberá os lembretes.");
-            return true;
-        } else {
-            permissionGranted = false;
-            showToast("Sem permissão, você não receberá alertas.");
-            return false;
-        }
-    }
-
-    // Disparar notificação imediatamente
-    function fireNotification(title, message, notifId) {
-        if (!permissionGranted && Notification.permission === 'granted') {
-            permissionGranted = true;
-        }
-        if (!permissionGranted) {
-            // tenta mostrar alerta alternativo
-            showToast(`⚠️ [${title}] ${message} (permissão negada)`, 4000);
-            return false;
-        }
-        try {
-            const notification = new Notification(title, {
-                body: message,
-                icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%233b82f6"%3E%3Cpath d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.93 6 11v5l-2 2v1h16v-1l-2-2z"/%3E%3C/svg%3E',
-                silent: false,
-                vibrate: [200, 100, 200]
-            });
-            notification.onclick = function() {
-                window.focus();
-                notification.close();
-            };
-            setTimeout(() => notification.close(), 8000);
-            return true;
-        } catch(e) {
-            console.warn(e);
-            showToast(`🔔 ${title}: ${message}`, 3000);
-            return false;
-        }
-    }
-
-    // Verificar agendamentos pendentes e disparar se horário atingido
-    function checkPendingNotifications() {
-        if (!updatePermissionStatus()) {
-            // se não tem permissão, apenas não notifica mas ainda marca como triggered? Não, só dispara se tiver permissão.
-            // Mas precisamos evitar loops infinitos de checagem.
-        }
-        const now = Date.now();
-        let changed = false;
-        for (let i = 0; i < scheduledNotifications.length; i++) {
-            const n = scheduledNotifications[i];
-            if (!n.triggered && n.timestamp <= now) {
-                // Disparar notificação
-                const fired = fireNotification(n.title, n.message, n.id);
-                n.triggered = true;
-                changed = true;
-                if (fired) {
-                    showToast(`🔔 Notificação enviada: ${n.title}`, 2000);
-                } else {
-                    showToast(`⚠️ Não foi possível notificar: ${n.title} (permissão?)`, 2500);
+        
+        // Função para calcular IRRF progressivo
+        function calcularIRRF(baseCalculo, dependentes = 0) {
+            const deducaoPorDependente = 189.59;
+            const baseAposDependentes = Math.max(0, baseCalculo - (dependentes * deducaoPorDependente));
+            
+            const faixasIRRF = [
+                { ate: 2259.20, aliquota: 0, deducao: 0 },
+                { ate: 2826.65, aliquota: 0.075, deducao: 169.44 },
+                { ate: 3751.05, aliquota: 0.15, deducao: 381.44 },
+                { ate: 4664.68, aliquota: 0.225, deducao: 662.77 },
+                { ate: Infinity, aliquota: 0.275, deducao: 896.00 }
+            ];
+            
+            for (const faixa of faixasIRRF) {
+                if (baseAposDependentes <= faixa.ate) {
+                    const irrf = baseAposDependentes * faixa.aliquota - faixa.deducao;
+                    return Math.max(0, irrf);
                 }
             }
+            return 0;
         }
-        if (changed) {
-            saveToLocalStorage();
-            renderNotifications();
-            updateCounter();
+        
+        // Função para calcular aviso prévio proporcional
+        function calcularAvisoPrevio(salario, mesesTrabalhados, tipoAviso) {
+            if (tipoAviso !== "indenizado") return 0;
+            
+            let diasAviso = 30;
+            if (mesesTrabalhados >= 12) {
+                const anosCompletos = Math.floor(mesesTrabalhados / 12);
+                diasAviso += Math.min(anosCompletos * 3, 60);
+            }
+            
+            return (salario / 30) * diasAviso;
         }
-    }
-
-    // Adicionar nova notificação agendada
-    function addNotification(title, message, dateStr, timeStr) {
-        if (!title.trim()) {
-            showToast("❌ Digite um título.");
-            return false;
+        
+        // Função para calcular saldo de salário proporcional
+        function calcularSaldoSalarioProporcional(salario, dataDemissao) {
+            const ultimoDiaMes = new Date(dataDemissao.getFullYear(), 
+                                           dataDemissao.getMonth() + 1, 0).getDate();
+            const diasTrabalhados = dataDemissao.getDate();
+            return (salario / ultimoDiaMes) * diasTrabalhados;
         }
-        if (!message.trim()) {
-            showToast("❌ Digite uma mensagem.");
-            return false;
+        
+        // Função para calcular DSR
+        function calcularDSR(mes, ano) {
+            let diasUteis = 0;
+            let dsrs = 0;
+            
+            const ultimoDia = new Date(ano, mes, 0).getDate();
+            
+            for(let dia = 1; dia <= ultimoDia; dia++) {
+                const data = new Date(ano, mes-1, dia);
+                const semana = data.getDay();
+                const diaStr = String(dia).padStart(2, '0') + "-" + String(mes).padStart(2, '0');
+                const ehFeriado = feriadosFixos.includes(diaStr);
+                
+                if(semana === 0 || ehFeriado) {
+                    dsrs++;
+                } else {
+                    diasUteis++;
+                }
+            }
+            
+            return {diasUteis, dsrs};
         }
-        if (!dateStr || !timeStr) {
-            showToast("📅 Selecione data e hora.");
-            return false;
+        
+        // Função para validar datas
+        function validarDatas(admissao, demissao) {
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            
+            if (admissao > demissao) {
+                alert("❌ A data de admissão não pode ser posterior à demissão!");
+                return false;
+            }
+            
+            if (demissao > hoje) {
+                alert("❌ A data de demissão não pode ser futura!");
+                return false;
+            }
+            
+            if (admissao > hoje) {
+                alert("❌ A data de admissão não pode ser futura!");
+                return false;
+            }
+            
+            return true;
         }
-        // Montar timestamp local (interpretar como data/hora no fuso do navegador)
-        const dateTimeStr = `${dateStr}T${timeStr}:00`;
-        const targetDate = new Date(dateTimeStr);
-        if (isNaN(targetDate.getTime())) {
-            showToast("Data/hora inválida.");
-            return false;
+        
+        // Função para calcular progresso do formulário
+        function calcularProgresso() {
+            const camposObrigatorios = ['nome', 'salario', 'admissao', 'demissao', 'tipo'];
+            let preenchidos = 0;
+            
+            camposObrigatorios.forEach(id => {
+                const campo = document.getElementById(id);
+                if (campo && campo.value !== '') {
+                    preenchidos++;
+                }
+            });
+            
+            const percentual = (preenchidos / camposObrigatorios.length) * 100;
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = `${percentual}%`;
+            progressBar.textContent = `${Math.round(percentual)}%`;
+            
+            if (percentual === 100) {
+                progressBar.style.background = '#2ecc71';
+            } else if (percentual >= 50) {
+                progressBar.style.background = '#f39c12';
+            } else {
+                progressBar.style.background = '#e74c3c';
+            }
         }
-        const now = new Date();
-        if (targetDate <= now) {
-            showToast("⏳ A data/hora deve ser futura! Escolha um horário posterior.");
-            return false;
+        
+        // Função para salvar rascunho
+        function salvarRascunho() {
+            const dados = {
+                nome: document.getElementById("nome").value,
+                funcao: document.getElementById("funcao").value,
+                dependentes: document.getElementById("dependentes").value,
+                salario: document.getElementById("salario").value,
+                admissao: document.getElementById("admissao").value,
+                demissao: document.getElementById("demissao").value,
+                tipo: document.getElementById("tipo").value,
+                aviso: document.getElementById("aviso").value,
+                multa480: document.getElementById("multa480").value,
+                periculosidade: document.getElementById("periculosidade").checked,
+                insalubridade20: document.getElementById("insalubridade20").checked,
+                insalubridade40: document.getElementById("insalubridade40").checked,
+                saldo_salario_tipo: document.getElementById("saldo_salario_tipo").value,
+                saldo_salario: document.getElementById("saldo_salario").value,
+                horas_extras_50: document.getElementById("horas_extras_50").value,
+                horas_extras_50_folga: document.getElementById("horas_extras_50_folga").value,
+                horas_extras_100: document.getElementById("horas_extras_100").value,
+                horas_extras_100_folga: document.getElementById("horas_extras_100_folga").value,
+                adicional_noturno: document.getElementById("adicional_noturno").value,
+                saldo_folga: document.getElementById("saldo_folga").value,
+                fgts: document.getElementById("fgts").value
+            };
+            
+            localStorage.setItem("rescisao_rascunho", JSON.stringify(dados));
+            
+            const indicator = document.getElementById('auto-save-indicator');
+            indicator.style.opacity = '1';
+            setTimeout(() => {
+                indicator.style.opacity = '0';
+            }, 2000);
         }
-        const timestamp = targetDate.getTime();
-        const newId = Date.now() + '-' + Math.random().toString(36).substr(2, 6);
-        const newNotif = {
-            id: newId,
-            title: title.trim(),
-            message: message.trim(),
-            timestamp: timestamp,
-            triggered: false
+        
+        // Função para carregar rascunho
+        function carregarRascunho() {
+            const dados = localStorage.getItem("rescisao_rascunho");
+            if (dados) {
+                const parsed = JSON.parse(dados);
+                document.getElementById("nome").value = parsed.nome || '';
+                document.getElementById("funcao").value = parsed.funcao || '';
+                document.getElementById("dependentes").value = parsed.dependentes || 0;
+                document.getElementById("salario").value = parsed.salario || '';
+                document.getElementById("admissao").value = parsed.admissao || '';
+                document.getElementById("demissao").value = parsed.demissao || '';
+                document.getElementById("tipo").value = parsed.tipo || '';
+                document.getElementById("aviso").value = parsed.aviso || 'indenizado';
+                document.getElementById("multa480").value = parsed.multa480 || 'nao';
+                document.getElementById("periculosidade").checked = parsed.periculosidade || false;
+                document.getElementById("insalubridade20").checked = parsed.insalubridade20 || false;
+                document.getElementById("insalubridade40").checked = parsed.insalubridade40 || false;
+                document.getElementById("saldo_salario_tipo").value = parsed.saldo_salario_tipo || 'horas';
+                document.getElementById("saldo_salario").value = parsed.saldo_salario || '';
+                document.getElementById("horas_extras_50").value = parsed.horas_extras_50 || '';
+                document.getElementById("horas_extras_50_folga").value = parsed.horas_extras_50_folga || '';
+                document.getElementById("horas_extras_100").value = parsed.horas_extras_100 || '';
+                document.getElementById("horas_extras_100_folga").value = parsed.horas_extras_100_folga || '';
+                document.getElementById("adicional_noturno").value = parsed.adicional_noturno || '';
+                document.getElementById("saldo_folga").value = parsed.saldo_folga || '';
+                document.getElementById("fgts").value = parsed.fgts || '';
+                
+                calcularProgresso();
+            }
+        }
+        
+        // Função para alternar tema
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+        
+        // Função para exportar PDF
+        function exportarPDF() {
+            const element = document.querySelector('.results-section');
+            const nome = document.getElementById("nome").value || "funcionario";
+            
+            const opt = {
+                margin: 1,
+                filename: `rescisao_${nome}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).save();
+            mostrarToast("PDF gerado com sucesso!");
+        }
+        
+        function adicionarDesconto() {
+            const container = document.getElementById('descontos-container');
+            const novoSpan = document.createElement('div');
+            novoSpan.className = 'dynamic-field';
+            novoSpan.innerHTML = `
+                <input type="text" placeholder="Nome do desconto" class="nome-desconto">
+                <input type="number" step="0.01" placeholder="Valor (R$)" class="valor-desconto">
+                <button class="btn-remove" onclick="removerCampo(this)">X</button>
+            `;
+            container.appendChild(novoSpan);
+        }
+        
+        function adicionarGratificacao() {
+            const container = document.getElementById('gratificacoes-container');
+            const novoSpan = document.createElement('div');
+            novoSpan.className = 'dynamic-field';
+            novoSpan.innerHTML = `
+                <input type="text" placeholder="Nome da gratificação" class="nome-gratificacao">
+                <input type="number" step="0.01" placeholder="Valor (R$)" class="valor-gratificacao">
+                <button class="btn-remove" onclick="removerCampo(this)">X</button>
+            `;
+            container.appendChild(novoSpan);
+        }
+        
+        function removerCampo(botao) {
+            const campo = botao.parentNode;
+            campo.parentNode.removeChild(campo);
+        }
+        
+        function mostrarToast(mensagem) {
+            const toast = document.getElementById("toast");
+            toast.textContent = mensagem;
+            toast.classList.add("show");
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 2000);
+        }
+        
+        function calcularRescisao() {
+            // Obter valores dos campos
+            const nome = document.getElementById("nome").value;
+            const funcao = document.getElementById("funcao").value;
+            const salario = parseFloat(document.getElementById("salario").value) || 0;
+            const dependentes = parseInt(document.getElementById("dependentes").value) || 0;
+            const dataAdmissao = new Date(document.getElementById("admissao").value);
+            const dataDemissao = new Date(document.getElementById("demissao").value);
+            const tipoDemissao = document.getElementById("tipo").value;
+            const tipoAviso = document.getElementById("aviso").value;
+            const multa480 = document.getElementById("multa480").value;
+            const periculosidade = document.getElementById("periculosidade").checked;
+            const insalubridade20 = document.getElementById("insalubridade20").checked;
+            const insalubridade40 = document.getElementById("insalubridade40").checked;
+            const fgts = parseFloat(document.getElementById("fgts").value) || 0;
+            
+            // Validar datas
+            if (!validarDatas(dataAdmissao, dataDemissao)) return;
+            
+            const saldoSalarioTipo = document.getElementById("saldo_salario_tipo").value;
+            const saldoSalarioInput = document.getElementById("saldo_salario").value;
+            
+            const horasExtras50 = hhmmParaHorasDecimal(document.getElementById("horas_extras_50").value);
+            const horasExtras50Folga = hhmmParaHorasDecimal(document.getElementById("horas_extras_50_folga").value);
+            const horasExtras100 = hhmmParaHorasDecimal(document.getElementById("horas_extras_100").value);
+            const horasExtras100Folga = hhmmParaHorasDecimal(document.getElementById("horas_extras_100_folga").value);
+            const adicionalNoturno = hhmmParaHorasDecimal(document.getElementById("adicional_noturno").value);
+            const saldoFolga = parseFloat(document.getElementById("saldo_folga").value) || 0;
+            
+            // Calcular diferença entre datas em meses
+            const diffMeses = (dataDemissao.getFullYear() - dataAdmissao.getFullYear()) * 12 
+                + (dataDemissao.getMonth() - dataAdmissao.getMonth());
+            const mesesTrabalhados = Math.max(diffMeses, 1);
+            
+            // Verificar se tem mais de 1 ano
+            const diffTime = Math.abs(dataDemissao - dataAdmissao);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+            const maisDeUmAno = diffDays > 365;
+            
+            // Definir direitos com base no tipo de demissão
+            let direitos = {
+                saldoSalario: true,
+                avisoPrevio: false,
+                decimoTerceiro: false,
+                feriasVencidas: false,
+                feriasProporcionais: false,
+                umTercoFerias: false,
+                fgtsMes: true,
+                fgtsRescisao: true,
+                multaFgts: false,
+                indenizacao479: false
+            };
+            
+            // Aplicar regras conforme o tipo de demissão
+            switch(tipoDemissao) {
+                case "pedido_demissao":
+                    direitos.decimoTerceiro = true;
+                    direitos.feriasProporcionais = true;
+                    direitos.umTercoFerias = true;
+                    if (maisDeUmAno) direitos.feriasVencidas = true;
+                    break;
+                case "dispensa_sem_justa":
+                    direitos.avisoPrevio = true;
+                    direitos.decimoTerceiro = true;
+                    direitos.feriasProporcionais = true;
+                    direitos.umTercoFerias = true;
+                    direitos.multaFgts = true;
+                    if (maisDeUmAno) direitos.feriasVencidas = true;
+                    break;
+                case "dispensa_com_justa":
+                    if (maisDeUmAno) {
+                        direitos.feriasVencidas = true;
+                        direitos.umTercoFerias = true;
+                    }
+                    break;
+                case "acordo":
+                    direitos.avisoPrevio = true;
+                    direitos.decimoTerceiro = true;
+                    direitos.feriasProporcionais = true;
+                    direitos.umTercoFerias = true;
+                    direitos.multaFgts = true;
+                    if (maisDeUmAno) direitos.feriasVencidas = true;
+                    break;
+                case "experiencia_extincao":
+                    direitos.decimoTerceiro = true;
+                    direitos.feriasProporcionais = true;
+                    direitos.umTercoFerias = true;
+                    break;
+                case "experiencia_ant_empregador":
+                    direitos.decimoTerceiro = true;
+                    direitos.feriasProporcionais = true;
+                    direitos.umTercoFerias = true;
+                    direitos.multaFgts = true;
+                    direitos.indenizacao479 = true;
+                    break;
+                case "experiencia_ant_empregado":
+                    direitos.decimoTerceiro = true;
+                    direitos.feriasProporcionais = true;
+                    direitos.umTercoFerias = true;
+                    break;
+            }
+            
+            // Calcular valores
+            const valorHora = salario / 220;
+            
+            // Saldo de salário proporcional
+            let saldoSalarioValor = 0;
+            if (saldoSalarioTipo === "horas") {
+                const saldoSalarioHoras = hhmmParaHorasDecimal(saldoSalarioInput);
+                saldoSalarioValor = saldoSalarioHoras * valorHora;
+            } else {
+                const dias = parseFloat(saldoSalarioInput) || 0;
+                saldoSalarioValor = dias * (salario / 30);
+            }
+            
+            // Usar cálculo proporcional se campo vazio
+            if (!saldoSalarioInput) {
+                saldoSalarioValor = calcularSaldoSalarioProporcional(salario, dataDemissao);
+            }
+            
+            // Adicionais de risco
+            let adicionalInsalubridade = 0;
+            if (insalubridade20) adicionalInsalubridade = salario * 0.2;
+            if (insalubridade40) adicionalInsalubridade = salario * 0.4;
+            
+            const adicionalPericulosidade = periculosidade ? salario * 0.3 : 0;
+            
+            const horasExtras50Valor = horasExtras50 * valorHora * 1.5;
+            const horasExtras50FolgaValor = horasExtras50Folga * valorHora * 1.5;
+            const horasExtras100Valor = horasExtras100 * valorHora * 2;
+            const horasExtras100FolgaValor = horasExtras100Folga * valorHora * 2;
+            const adicionalNoturnoValor = adicionalNoturno * (valorHora * 0.2);
+            const saldoFolgaValor = saldoFolga * (salario / 30);
+            
+            // Calcular DSR
+            let reflexoExtrasDSR = 0;
+            let reflexoAdicionalNoturnoDSR = 0;
+            
+            if (dataDemissao && !isNaN(dataDemissao.getTime())) {
+                const mes = dataDemissao.getMonth() + 1;
+                const ano = dataDemissao.getFullYear();
+                const {diasUteis, dsrs} = calcularDSR(mes, ano);
+                
+                const totalHorasExtras = horasExtras50Valor + horasExtras50FolgaValor + 
+                                       horasExtras100Valor + horasExtras100FolgaValor;
+                
+                if (diasUteis > 0) {
+                    reflexoExtrasDSR = (totalHorasExtras / diasUteis) * dsrs;
+                    reflexoAdicionalNoturnoDSR = (adicionalNoturnoValor / diasUteis) * dsrs;
+                }
+                
+                document.getElementById("dsr-info").innerHTML = `📅 No mês da demissão: ${diasUteis} dias úteis e ${dsrs} DSRs (domingos + feriados)`;
+            }
+            
+            // 13º Salário
+            const decimoTerceiro = direitos.decimoTerceiro ? (salario / 12 * mesesTrabalhados) : 0;
+            
+            // Férias
+            const feriasVencidas = direitos.feriasVencidas ? salario : 0;
+            const feriasProporcionais = direitos.feriasProporcionais ? (salario / 12 * mesesTrabalhados) : 0;
+            const umTercoFerias = direitos.umTercoFerias ? ((feriasVencidas + feriasProporcionais) / 3) : 0;
+            
+            // Aviso prévio proporcional
+            const avisoPrevioValor = calcularAvisoPrevio(salario, mesesTrabalhados, tipoAviso);
+            
+            // Multa do FGTS
+            let multaFgtsValor = 0;
+            if (direitos.multaFgts) {
+                if (tipoDemissao === "acordo") {
+                    multaFgtsValor = fgts * 0.2;
+                } else {
+                    multaFgtsValor = fgts * 0.4;
+                }
+            }
+            
+            // Indenização Art. 479 CLT
+            const indenizacao479 = direitos.indenizacao479 ? (salario / 30 * 3) : 0;
+            
+            // Obter descontos variados
+            const descontosVariados = [];
+            document.querySelectorAll('#descontos-container .dynamic-field').forEach(campo => {
+                const nome = campo.querySelector('.nome-desconto').value;
+                const valor = parseFloat(campo.querySelector('.valor-desconto').value) || 0;
+                if (nome && valor > 0) {
+                    descontosVariados.push({ nome, valor });
+                }
+            });
+            
+            // Obter gratificações variadas
+            const gratificacoesVariadas = [];
+            document.querySelectorAll('#gratificacoes-container .dynamic-field').forEach(campo => {
+                const nome = campo.querySelector('.nome-gratificacao').value;
+                const valor = parseFloat(campo.querySelector('.valor-gratificacao').value) || 0;
+                if (nome && valor > 0) {
+                    gratificacoesVariadas.push({ nome, valor });
+                }
+            });
+            
+            // Calcular totais para INSS e IRRF
+            const totalBaseInss = saldoSalarioValor + adicionalInsalubridade + adicionalPericulosidade + 
+                                 horasExtras50Valor + horasExtras50FolgaValor + horasExtras100Valor + 
+                                 horasExtras100FolgaValor + adicionalNoturnoValor + saldoFolgaValor + 
+                                 reflexoExtrasDSR + reflexoAdicionalNoturnoDSR;
+            
+            const totalBaseDecimo = decimoTerceiro;
+            
+            // INSS e IRRF
+            const inssRescisao = calcularINSS(totalBaseInss);
+            const inssDecimoTerceiro = calcularINSS(totalBaseDecimo);
+            const irrfRescisao = calcularIRRF(totalBaseInss, dependentes);
+            
+            // Multa Art. 480 CLT
+            const multa480Valor = (multa480 === "sim") ? (salario / 30 * 3) : 0;
+            
+            // Totais
+            let totalProventos = saldoSalarioValor + adicionalInsalubridade + adicionalPericulosidade + 
+                                horasExtras50Valor + horasExtras50FolgaValor + horasExtras100Valor + 
+                                horasExtras100FolgaValor + adicionalNoturnoValor + saldoFolgaValor + 
+                                reflexoExtrasDSR + reflexoAdicionalNoturnoDSR + decimoTerceiro + 
+                                feriasVencidas + feriasProporcionais + umTercoFerias + avisoPrevioValor + 
+                                multaFgtsValor + indenizacao479;
+            
+            gratificacoesVariadas.forEach(gratificacao => {
+                totalProventos += gratificacao.valor;
+            });
+            
+            let totalDescontos = inssRescisao + inssDecimoTerceiro + irrfRescisao + multa480Valor;
+            
+            descontosVariados.forEach(desconto => {
+                totalDescontos += desconto.valor;
+            });
+            
+            const liquido = totalProventos - totalDescontos;
+            
+            // Preencher informações do funcionário
+            if (nome && dataAdmissao && dataDemissao) {
+                document.getElementById("info-funcionario").style.display = 'block';
+                document.getElementById("result-nome").textContent = nome;
+                document.getElementById("result-funcao").textContent = funcao || 'Não informado';
+                document.getElementById("result-periodo").textContent = `${formatarData(dataAdmissao)} a ${formatarData(dataDemissao)}`;
+            }
+            
+            // Preencher tabela de proventos
+            const proventosTable = document.getElementById("proventos-table").querySelector("tbody");
+            let proventosHTML = `
+                <tr>
+                    <td>Saldo de Salário</td>
+                    <td>Proporcional aos dias trabalhados</td>
+                    <td>${formatarMoeda(saldoSalarioValor)}</td>
+                </tr>`;
+            
+            if (adicionalInsalubridade > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Insalubridade ${insalubridade20 ? '20%' : '40%'}</td>
+                    <td>Mensal</td>
+                    <td>${formatarMoeda(adicionalInsalubridade)}</td>
+                </tr>`;
+            }
+            
+            if (adicionalPericulosidade > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Periculosidade 30%</td>
+                    <td>Mensal</td>
+                    <td>${formatarMoeda(adicionalPericulosidade)}</td>
+                </tr>`;
+            }
+            
+            if (horasExtras50Valor > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Horas Extras 50%</td>
+                    <td>${document.getElementById("horas_extras_50").value || '0'} horas</td>
+                    <td>${formatarMoeda(horasExtras50Valor)}</td>
+                </tr>`;
+            }
+            
+            if (horasExtras50FolgaValor > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Horas Extras 50% Folga</td>
+                    <td>${document.getElementById("horas_extras_50_folga").value || '0'} horas</td>
+                    <td>${formatarMoeda(horasExtras50FolgaValor)}</td>
+                </tr>`;
+            }
+            
+            if (horasExtras100Valor > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Horas Extras 100%</td>
+                    <td>${document.getElementById("horas_extras_100").value || '0'} horas</td>
+                    <td>${formatarMoeda(horasExtras100Valor)}</td>
+                </tr>`;
+            }
+            
+            if (horasExtras100FolgaValor > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Horas Extras 100% Folga</td>
+                    <td>${document.getElementById("horas_extras_100_folga").value || '0'} horas</td>
+                    <td>${formatarMoeda(horasExtras100FolgaValor)}</td>
+                </tr>`;
+            }
+            
+            if (adicionalNoturnoValor > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Adicional Noturno</td>
+                    <td>${document.getElementById("adicional_noturno").value || '0'} horas</td>
+                    <td>${formatarMoeda(adicionalNoturnoValor)}</td>
+                </tr>`;
+            }
+            
+            if (reflexoExtrasDSR > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Reflexo Extras DSR</td>
+                    <td>Proporcional</td>
+                    <td>${formatarMoeda(reflexoExtrasDSR)}</td>
+                </tr>`;
+            }
+            
+            if (reflexoAdicionalNoturnoDSR > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Reflexo Adicional Noturno DSR</td>
+                    <td>Proporcional</td>
+                    <td>${formatarMoeda(reflexoAdicionalNoturnoDSR)}</td>
+                </tr>`;
+            }
+            
+            if (saldoFolgaValor > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Saldo de Folga Rescisão</td>
+                    <td>${saldoFolga} dias</td>
+                    <td>${formatarMoeda(saldoFolgaValor)}</td>
+                </tr>`;
+            }
+            
+            if (decimoTerceiro > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>13º Salário Proporcional</td>
+                    <td>${mesesTrabalhados} meses</td>
+                    <td>${formatarMoeda(decimoTerceiro)}</td>
+                </tr>`;
+            }
+            
+            if (feriasVencidas > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Férias Vencidas</td>
+                    <td>30 dias</td>
+                    <td>${formatarMoeda(feriasVencidas)}</td>
+                </tr>`;
+            }
+            
+            if (feriasProporcionais > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Férias Proporcionais</td>
+                    <td>${mesesTrabalhados} meses</td>
+                    <td>${formatarMoeda(feriasProporcionais)}</td>
+                </tr>`;
+            }
+            
+            if (umTercoFerias > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>1/3 Férias</td>
+                    <td>33,33%</td>
+                    <td>${formatarMoeda(umTercoFerias)}</td>
+                </tr>`;
+            }
+            
+            if (avisoPrevioValor > 0) {
+                const diasAviso = 30 + (mesesTrabalhados >= 12 ? Math.min(Math.floor(mesesTrabalhados / 12) * 3, 60) : 0);
+                proventosHTML += `
+                <tr>
+                    <td>Aviso Prévio Indenizado</td>
+                    <td>${diasAviso} dias</td>
+                    <td>${formatarMoeda(avisoPrevioValor)}</td>
+                </tr>`;
+            }
+            
+            if (multaFgtsValor > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Multa FGTS</td>
+                    <td>${tipoDemissao === "acordo" ? '20%' : '40%'}</td>
+                    <td>${formatarMoeda(multaFgtsValor)}</td>
+                </tr>`;
+            }
+            
+            if (indenizacao479 > 0) {
+                proventosHTML += `
+                <tr>
+                    <td>Indenização Art. 479 CLT</td>
+                    <td>3 dias</td>
+                    <td>${formatarMoeda(indenizacao479)}</td>
+                </tr>`;
+            }
+            
+            gratificacoesVariadas.forEach(gratificacao => {
+                proventosHTML += `
+                <tr>
+                    <td>${gratificacao.nome}</td>
+                    <td>Gratificação</td>
+                    <td>${formatarMoeda(gratificacao.valor)}</td>
+                </tr>`;
+            });
+            
+            proventosHTML += `
+                <tr class="total-row">
+                    <td colspan="2">Total de Proventos</td>
+                    <td>${formatarMoeda(totalProventos)}</td>
+                </tr>`;
+            
+            proventosTable.innerHTML = proventosHTML;
+            
+            // Preencher tabela de descontos
+            const descontosTable = document.getElementById("descontos-table").querySelector("tbody");
+            let descontosHTML = `
+                <tr>
+                    <td>INSS sobre Rescisão</td>
+                    <td>Progressivo (até 14%)</td>
+                    <td>${formatarMoeda(inssRescisao)}</td>
+                </tr>`;
+            
+            if (inssDecimoTerceiro > 0) {
+                descontosHTML += `
+                <tr>
+                    <td>INSS 13º Salário</td>
+                    <td>Progressivo (até 14%)</td>
+                    <td>${formatarMoeda(inssDecimoTerceiro)}</td>
+                </tr>`;
+            }
+            
+            descontosHTML += `
+                <tr>
+                    <td>IRRF sobre Rescisão</td>
+                    <td>Progressivo (até 27,5%)</td>
+                    <td>${formatarMoeda(irrfRescisao)}</td>
+                </tr>`;
+            
+            if (multa480Valor > 0) {
+                descontosHTML += `
+                <tr>
+                    <td>Multa Art. 480 CLT</td>
+                    <td>3 dias</td>
+                    <td>${formatarMoeda(multa480Valor)}</td>
+                </tr>`;
+            }
+            
+            descontosVariados.forEach(desconto => {
+                descontosHTML += `
+                <tr>
+                    <td>${desconto.nome}</td>
+                    <td>Desconto</td>
+                    <td>${formatarMoeda(desconto.valor)}</td>
+                </tr>`;
+            });
+            
+            descontosHTML += `
+                <tr class="total-row">
+                    <td colspan="2">Total de Descontos</td>
+                    <td>${formatarMoeda(totalDescontos)}</td>
+                </tr>`;
+            
+            descontosTable.innerHTML = descontosHTML;
+            
+            // Atualizar totais
+            document.getElementById("total-proventos").textContent = formatarMoeda(totalProventos);
+            document.getElementById("total-descontos").textContent = formatarMoeda(totalDescontos);
+            document.getElementById("valor-liquido").textContent = `Líquido a Receber: ${formatarMoeda(liquido)}`;
+            
+            mostrarToast("✅ Cálculo realizado com sucesso!");
+        }
+        
+        function limparCampos() {
+            document.getElementById("nome").value = "";
+            document.getElementById("funcao").value = "";
+            document.getElementById("dependentes").value = "0";
+            document.getElementById("salario").value = "";
+            document.getElementById("admissao").value = "";
+            document.getElementById("demissao").value = "";
+            document.getElementById("tipo").value = "";
+            document.getElementById("aviso").value = "indenizado";
+            document.getElementById("multa480").value = "nao";
+            document.getElementById("periculosidade").checked = false;
+            document.getElementById("insalubridade20").checked = false;
+            document.getElementById("insalubridade40").checked = false;
+            document.getElementById("saldo_salario_tipo").value = "horas";
+            document.getElementById("saldo_salario").value = "";
+            document.getElementById("horas_extras_50").value = "";
+            document.getElementById("horas_extras_50_folga").value = "";
+            document.getElementById("horas_extras_100").value = "";
+            document.getElementById("horas_extras_100_folga").value = "";
+            document.getElementById("adicional_noturno").value = "";
+            document.getElementById("saldo_folga").value = "";
+            document.getElementById("fgts").value = "";
+            
+            // Limpar descontos variados
+            document.getElementById("descontos-container").innerHTML = `
+                <div class="dynamic-field">
+                    <input type="text" placeholder="Nome do desconto" class="nome-desconto">
+                    <input type="number" step="0.01" placeholder="Valor (R$)" class="valor-desconto">
+                    <button class="btn-remove" onclick="removerCampo(this)">X</button>
+                </div>
+            `;
+            
+            // Limpar gratificações variadas
+            document.getElementById("gratificacoes-container").innerHTML = `
+                <div class="dynamic-field">
+                    <input type="text" placeholder="Nome da gratificação" class="nome-gratificacao">
+                    <input type="number" step="0.01" placeholder="Valor (R$)" class="valor-gratificacao">
+                    <button class="btn-remove" onclick="removerCampo(this)">X</button>
+                </div>
+            `;
+            
+            // Limpar resultados
+            document.getElementById("info-funcionario").style.display = 'none';
+            document.getElementById("dsr-info").innerHTML = "Informe a data de demissão para calcular o DSR.";
+            document.getElementById("proventos-table").querySelector("tbody").innerHTML = "";
+            document.getElementById("descontos-table").querySelector("tbody").innerHTML = "";
+            document.getElementById("total-proventos").textContent = "R$ 0,00";
+            document.getElementById("total-descontos").textContent = "R$ 0,00";
+            document.getElementById("valor-liquido").textContent = "Líquido a Receber: R$ 0,00";
+            
+            calcularProgresso();
+            localStorage.removeItem("rescisao_rascunho");
+            mostrarToast("🗑️ Todos os campos foram limpos!");
+        }
+        
+        function copiarResumo() {
+            const totalProventos = document.getElementById("total-proventos").textContent;
+            const totalDescontos = document.getElementById("total-descontos").textContent;
+            const valorLiquido = document.getElementById("valor-liquido").textContent;
+            const nome = document.getElementById("nome").value;
+            
+            const textoResumo = `RESUMO DA RESCISÃO - ${nome || "Funcionário"}
+            =========================================
+            Total de Proventos: ${totalProventos}
+            Total de Descontos: ${totalDescontos}
+            ${valorLiquido}
+            =========================================
+            Data do cálculo: ${new Date().toLocaleDateString('pt-BR')}`;
+            
+            navigator.clipboard.writeText(textoResumo).then(() => {
+                mostrarToast("📋 Resumo copiado para a área de transferência!");
+            });
+        }
+        
+        // Event listeners para auto-save e progresso
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('change', () => {
+                calcularProgresso();
+                salvarRascunho();
+            });
+            element.addEventListener('input', () => {
+                calcularProgresso();
+                salvarRascunho();
+            });
+        });
+        
+        // Inicialização
+        window.onload = () => {
+            // Carregar tema salvo
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            
+            // Carregar rascunho salvo
+            carregarRascunho();
+            
+            // Iniciar auto-save periódico
+            autoSaveInterval = setInterval(salvarRascunho, 30000);
+            
+            calcularProgresso();
         };
-        scheduledNotifications.push(newNotif);
-        // ordenar por timestamp (mais próximo primeiro)
-        scheduledNotifications.sort((a,b) => a.timestamp - b.timestamp);
-        saveToLocalStorage();
-        renderNotifications();
-        updateCounter();
-        showToast(`✅ Notificação agendada para ${targetDate.toLocaleString()}`, 3000);
-        // Limpar campos (opcional)
-        titleInput.value = '';
-        msgInput.value = '';
-        // manter data e hora? deixamos como estão, mas pode resetar opcionalmente
-        return true;
-    }
-
-    // Deletar notificação
-    function deleteNotification(id) {
-        scheduledNotifications = scheduledNotifications.filter(n => n.id !== id);
-        saveToLocalStorage();
-        renderNotifications();
-        updateCounter();
-        showToast("🗑️ Lembrete removido", 1500);
-    }
-
-    // Renderizar a lista de notificações
-    function renderNotifications() {
-        if (!notifListDiv) return;
-        const activeNotifs = scheduledNotifications.filter(n => !n.triggered);
-        const expiredNotifs = scheduledNotifications.filter(n => n.triggered);
-        
-        if (scheduledNotifications.length === 0) {
-            notifListDiv.innerHTML = `<div class="empty-state">📭 Nenhum lembrete programado.<br>Crie um acima!</div>`;
-            return;
-        }
-        
-        let html = '';
-        // Mostrar primeiro os ativos (não disparados)
-        if (activeNotifs.length > 0) {
-            activeNotifs.forEach(notif => {
-                const dateObj = new Date(notif.timestamp);
-                const formatted = dateObj.toLocaleString();
-                html += `
-                    <div class="notif-item">
-                        <div class="notif-title">
-                            <span>🔔 ${escapeHtml(notif.title)}</span>
-                            <button class="delete-btn" data-id="${notif.id}" aria-label="Excluir">✖️</button>
-                        </div>
-                        <div class="notif-msg">${escapeHtml(notif.message)}</div>
-                        <div class="notif-time">⏱️ ${formatted}</div>
-                    </div>
-                `;
-            });
-        }
-        // Mostrar já disparados (histórico)
-        if (expiredNotifs.length > 0) {
-            html += `<div style="margin-top: 12px; font-size:0.75rem; color:#64748b; padding-left: 8px;">🔔 Já enviados:</div>`;
-            expiredNotifs.forEach(notif => {
-                const dateObj = new Date(notif.timestamp);
-                const formatted = dateObj.toLocaleString();
-                html += `
-                    <div class="notif-item expired">
-                        <div class="notif-title">
-                            <span>✅ ${escapeHtml(notif.title)}</span>
-                            <button class="delete-btn" data-id="${notif.id}" aria-label="Excluir">🗑️</button>
-                        </div>
-                        <div class="notif-msg">${escapeHtml(notif.message)}</div>
-                        <div class="notif-time">⏱️ ${formatted} <span class="notif-status">(enviado)</span></div>
-                    </div>
-                `;
-            });
-        }
-        
-        notifListDiv.innerHTML = html;
-        
-        // Atachar eventos de delete aos botões
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = btn.getAttribute('data-id');
-                if (id) deleteNotification(id);
-            });
-        });
-    }
-    
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-            return c;
-        });
-    }
-    
-    function updateCounter() {
-        const count = scheduledNotifications.filter(n => !n.triggered).length;
-        if (counterBadge) counterBadge.innerText = count;
-    }
-    
-    // Inicializar data/hora default (próximo horário útil)
-    function setDefaultDateTime() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes() + 2).padStart(2, '0'); // +2 min padrão
-        let finalMinutes = parseInt(minutes);
-        let finalHours = parseInt(hours);
-        if (finalMinutes >= 60) {
-            finalMinutes -= 60;
-            finalHours += 1;
-        }
-        if (finalHours >= 24) finalHours = 0;
-        const defaultDate = `${year}-${month}-${day}`;
-        const defaultTime = `${String(finalHours).padStart(2,'0')}:${String(finalMinutes).padStart(2,'0')}`;
-        if (dateInput) dateInput.value = defaultDate;
-        if (timeInput) timeInput.value = defaultTime;
-    }
-    
-    // Iniciar verificador periódico (a cada 30 segundos para ser responsivo)
-    function startChecker() {
-        if (intervalChecker) clearInterval(intervalChecker);
-        // Verificar imediatamente ao carregar
-        checkPendingNotifications();
-        intervalChecker = setInterval(() => {
-            checkPendingNotifications();
-        }, 30000); // 30 segundos
-        // adicionalmente, também verificar a cada mudança de visibilidade da página
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-                checkPendingNotifications();
-            }
-        });
-    }
-    
-    // Eventos e inicialização
-    function init() {
-        loadFromLocalStorage();
-        setDefaultDateTime();
-        updatePermissionStatus();
-        startChecker();
-        
-        // Botão agendar
-        scheduleBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const title = titleInput.value;
-            const msg = msgInput.value;
-            const dateVal = dateInput.value;
-            const timeVal = timeInput.value;
-            addNotification(title, msg, dateVal, timeVal);
-        });
-        
-        // Botão permissão
-        testPermBtn.addEventListener('click', async () => {
-            const granted = await rKaNCgLvMEXxNzMxj2F7FYi1AdRrTo6Nhu();
-            if (granted) {
-                // Notificação de teste
-                fireNotification('✅ Notificações ativas', 'Você receberá lembretes na hora certa!', 'test');
-            }
-        });
-        
-        // Ao modificar permissão por ação externa, atualizar flag
-        window.addEventListener('load', () => {
-            updatePermissionStatus();
-            // Garantir que quando a página carregar verifique se alguma notificação ficou pendente enquanto estava fechado
-            checkPendingNotifications();
-        });
-        
-        // Para evitar muitos eventos, tudo ok
-    }
-    
-    init();
-</script>
+    </script>
 </body>
 </html>
